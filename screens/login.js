@@ -1,23 +1,49 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button, Alert } from 'react-native';
+import {styles} from '../styles';
 import User from '../api/user';
 
 export default function Login({navigation}) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [response, setResponse] = useState('');
-
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    
     const loginPressed = () => {
+      setEmailError(null);
+      setPasswordError(null);
+      User.login({email: email, password: password}).then(response => {
+        if(response.success){
+          navigation.navigate('Home');
+        }else{
+          if(response.type == 'validation'){
+            if(response.message.email){
+              setEmailError(response.message.email);
+            }
 
-      User.login({email: email, password: password}).then(response => setResponse(response));
-      if(response.sucess == 'fail'){
-        console.log(fail)
-      }
+            if(response.message.password){
+              setPasswordError(response.message.password);
+            }               
+          }else{
+            Alert.alert(
+              "Invalid Account",
+              JSON.stringify(response.message).replace(/\"/g, ""),
+              [
+                { text: "OK" }
+              ],
+              { cancelable: false }
+            );
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            });
+          }
+        }
+      });
+      
     }
-
-
 
   return (
     <View style={styles.container}>
@@ -27,6 +53,7 @@ export default function Login({navigation}) {
             placeholder = 'Email'
             onChangeText={(email) => setEmail(email)}
         />
+        {emailError != null ? <Text style={styles.errorMessage}>{emailError}</Text>: null}
 
         <TextInput 
             style={styles.input}
@@ -34,6 +61,8 @@ export default function Login({navigation}) {
             secureTextEntry ={true}
             onChangeText={(password) => setPassword(password)}
         />
+
+        {passwordError != null? <Text style={styles.errorMessage}>{passwordError}</Text>: null}  
         <View style={styles.button}>
           <Button
             title='Log In'
@@ -51,32 +80,3 @@ export default function Login({navigation}) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: '10%',
-    fontFamily: 'Cochin',
-    paddingVertical: '40%'
-  },
-  input:{
-    height: 40,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    marginBottom: 20
-  },
-  registerButton: {
-    marginTop: 20,
-    alignItems:'center',
-    fontFamily: "Cochin"
-    
-  },
-  appTitle:{
-    fontSize: 30,
-    textAlign: 'center',
-    paddingBottom: 20
-  }
-});
