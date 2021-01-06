@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button, Alert } from 'react-native';
+import {Text, View, TextInput, TouchableOpacity, Button, Alert } from 'react-native';
 import {styles} from '../styles';
 import User from '../api/user';
 

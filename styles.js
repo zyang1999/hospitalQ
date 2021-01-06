@@ -1,11 +1,12 @@
 import {StyleSheet} from 'react-native';
 
-export const styles = StyleSheet.create({
+export const globalStyles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
         paddingHorizontal: '10%',
-        paddingVertical: '40%'
+        paddingVertical: '40%',
+        backgroundColor: '#0883ff'
       },
       input:{
         height: 40,
@@ -30,5 +31,17 @@ export const styles = StyleSheet.create({
       errorMessage:{
         paddingLeft: 10,
         color: 'red'
-      }
+      },
+      barCodeScanner:{
+        marginVertical: '20%',
+        marginVertical: '10%'
+      },
+      consultationImage:{
+        flex:1,
+        width: null,
+        height: null,
+        resizeMode: 'contain',
+        borderRadius: 30
+      },
+
 });
