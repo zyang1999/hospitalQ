@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { styles } from '../styles';
+import { globalStyles } from '../styles';
 
 export default function joinQueue() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -28,10 +28,10 @@ export default function joinQueue() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={globalStyles.container}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={styles.barCodeScanner}
+        style={StyleSheet.absoluteFillObject}
       />
     </View>
   );

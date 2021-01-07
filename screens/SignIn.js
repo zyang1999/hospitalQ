@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles';
 import User from '../api/user';
-import { AuthContext } from '../App';
+import { AuthContext } from '../screens/context';
 
 export default function SignIn({ navigation }) {
 
@@ -65,7 +65,7 @@ export default function SignIn({ navigation }) {
 
         <TouchableOpacity
           style={globalStyles.primaryButton}
-          onPress={() => signIn()}
+          onPress={() => signIn("asd")}
         >
           <Text style={{ color: 'white' }}>LOG IN</Text>
         </TouchableOpacity>

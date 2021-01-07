@@ -5,11 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
-import Home from './screens/Home';
+import Queue from './screens/Queue';
+import JoinQueue from './screens/joinQueue';
+import {AuthContext} from './screens/context';
+
+
 
 export default function App() {
-
-  const AuthContext = React.createContext();
 
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
@@ -91,7 +93,6 @@ export default function App() {
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-
         {state.userToken == null ? (
           <Stack.Navigator>
             <Stack.Screen name="SignIn" component={SignIn} />
@@ -100,11 +101,20 @@ export default function App() {
         ) : (
           <Tab.Navigator>
             <Tab.Screen name="Home" component={Home} />
-          </Tab.Navigator>
+          </Tab.Navigator>         
           )}
-
       </NavigationContainer>
     </AuthContext.Provider>
+  );
+}
+
+export function Home() {
+  const Stack = createStackNavigator();
+  return (
+      <Stack.Navigator>
+        <Stack.Screen name="Queue" component={Queue} />
+        <Stack.Screen name="JoinQueue" component={JoinQueue} />
+      </Stack.Navigator>
   );
 }
 

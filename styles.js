@@ -47,5 +47,8 @@ export const globalStyles = StyleSheet.create({
         resizeMode: 'contain',
         borderRadius: 30
       },
+      h3:{
+        fontSize: 30,
+      }
 
 });

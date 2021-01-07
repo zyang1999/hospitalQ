@@ -20,7 +20,7 @@ export default function SignUp({ navigation }) {
     setConfirmedPasswordError(null);
     User.register({ email: email, password: password, password_confirmation: password_confirmation, role: 'patient' }).then(response => {
       if (response.success) {
-        navigation.navigate('Home', {
+        navigation.navigate('Queue', {
           user: response.user,
         });
       } else {
