@@ -1,23 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import user from '../api/user';
 // import {styles} from '../styles';
 
 
-export default function Home({navigation}) {
+export default function Home({ route, navigation }) {
 
-    return(
+    return (
         <View style={styles.container}>
-            
+            <Text>Welcome, {JSON.stringify(user.first_name + user.last_name)}</Text>
             <TouchableOpacity
                 style={styles.button}
-                onPress={()=>navigation.navigate('joinQueue')}
+                onPress={() => navigation.navigate('joinQueue')}
             >
-                <Text style={{color: 'white'}}>Join Queue</Text>
+                <Text style={{ color: 'white' }}>Join Queue</Text>
             </TouchableOpacity>
         </View>
-        
-        
+
+
     );
 }
 
@@ -29,6 +30,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 50,
         marginVertical: 30,
         borderRadius: 20,
-        borderWidth:2
+        borderWidth: 2
     }
 });

@@ -1,38 +1,110 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Login from './screens/login.js';
-import SignUp from './screens/signUp.js';
-import Home from './screens/home.js';
-import joinQueue from './screens/joinQueue.js';
-import QueueInfo from './screens/QueueInfo.js';
-import Consultation from './screens/Consultation.js';
-import Pharmacy from './screens/Pharmacy';
-
+import * as React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import SignIn from './screens/SignIn';
+import SignUp from './screens/SignUp';
+import Home from './screens/Home';
 
 export default function App() {
+
+  const AuthContext = React.createContext();
+
+  const [state, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false,
+          };
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+          };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null,
+          };
+      }
+    },
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+    }
+  );
+
+  React.useEffect(() => {
+    const bootstrapAsync = async () => {
+      let userToken;
+
+      try {
+        userToken = await AsyncStorage.getItem('userToken');
+      } catch (e) {
+        console.log(e);
+      }
+      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+    };
+
+    bootstrapAsync();
+  }, []);
+
+  const _storeData = async (userToken) => {
+    try {
+      await AsyncStorage.setItem(
+        'userToken',
+        userToken
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async userToken => {
+        _storeData(userToken);
+        dispatch({ type: 'SIGN_IN', token: userToken });
+      },
+      signOut: () => {
+        _storeData(null);
+        dispatch({ type: 'SIGN_OUT' });
+      },
+      signUp: async userToken => {
+        _storeData(userToken);
+        dispatch({ type: 'SIGN_IN' });
+      },
+    }),
+    []
+  );
+
+  const Stack = createStackNavigator();
+  const Tab = createBottomTabNavigator();
+
   return (
-    <Pharmacy/>
-    // <NavigationContainer>
-    //   <Stack.Navigator>
-    //     <Stack.Screen name='LogIn' component={Login} />
-    //     <Stack.Screen name='SignUp' component={SignUp} />
-    //     <Stack.Screen name='Home' component={Home} />
-    //     <Stack.Screen name='joinQueue' component={joinQueue} />
-    //   </Stack.Navigator>
-    // </NavigationContainer>
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+
+        {state.userToken == null ? (
+          <Stack.Navigator>
+            <Stack.Screen name="SignIn" component={SignIn} />
+            <Stack.Screen name="SignUp" component={SignUp} />
+          </Stack.Navigator>
+        ) : (
+          <Tab.Navigator>
+            <Tab.Screen name="Home" component={Home} />
+          </Tab.Navigator>
+          )}
+
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 
-const Stack = createStackNavigator();
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

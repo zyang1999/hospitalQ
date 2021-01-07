@@ -6,7 +6,6 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: '10%',
         paddingVertical: '40%',
-        backgroundColor: '#0883ff'
       },
       input:{
         height: 40,
@@ -20,8 +19,13 @@ export const globalStyles = StyleSheet.create({
         marginTop: 20,
         alignItems:'center',
       },
-      button:{
-        marginTop: 20
+      primaryButton:{
+        marginTop: 20,
+        backgroundColor: '#5DADE2',
+        alignItems: 'center',
+        borderRadius: 20,
+        padding: 10,
+        marginHorizontal: 40
       },    
       appTitle:{
         fontSize: 30,

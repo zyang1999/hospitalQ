@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 // import {styles} from '../styles';
 
-export default function doctorView(){
+export default function doctorView() {
 
-    return(
+    return (
         <View style={styles.container}>
             <View style={styles.userQueue}>
-                <Text style={{fontSize: 30}}>Current Patient: </Text>
-                <Text style={{fontSize: 50}}>Name: Ang Tiong Yang</Text> 
+                <Text style={{ fontSize: 30 }}>Current Patient: </Text>
+                <Text style={{ fontSize: 50 }}>Name: Ang Tiong Yang</Text>
                 <Text > IC Number: 00000000000001</Text>
             </View>
             <TouchableOpacity>
@@ -29,14 +29,14 @@ export default function doctorView(){
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex: 1, 
+    container: {
+        flex: 1,
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#0883ff'
-        
+
     },
-    userQueue:{
+    userQueue: {
         flex: 0.5,
         justifyContent: 'center',
         marginVertical: 10,
@@ -44,34 +44,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white'
     },
-    queueInfo:{
+    queueInfo: {
         marginVertical: 10,
         borderWidth: 2,
         borderRadius: 10
     },
-    queueStatus:{
+    queueStatus: {
         flexDirection: 'row',
-        justifyContent: 'space-between',              
+        justifyContent: 'space-between',
     },
-    queueTitle:{
+    queueTitle: {
         fontSize: 16,
         padding: 10,
         borderRadius: 20,
         textAlign: 'center',
         width: '48%',
-        marginVertical: 5 ,
+        marginVertical: 5,
         textTransform: 'uppercase',
-        backgroundColor: 'white' 
-              
+        backgroundColor: 'white'
+
     },
-    queueNumber:{
+    queueNumber: {
         fontSize: 20,
         padding: 10,
         borderRadius: 20,
         textAlign: 'center',
         width: '48%',
-        marginVertical: 5 ,
+        marginVertical: 5,
         textTransform: 'uppercase',
-        backgroundColor: 'white'             
+        backgroundColor: 'white'
     }
 });
