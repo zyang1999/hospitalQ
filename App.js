@@ -1,17 +1,28 @@
 import * as React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AuthContext } from './screens/context';
+import { globalStyles } from './styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AppLoading from 'expo-app-loading';
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
 import Queue from './screens/Queue';
 import JoinQueue from './screens/joinQueue';
-import {AuthContext} from './screens/context';
-
-
 
 export default function App() {
+
+  let [fontsLoaded] = Font.useFonts({
+    'RobotoRegular': require('./assets/fonts/Roboto-Regular.ttf'),
+    'RobotoBold': require('./assets/fonts/Roboto-Bold.ttf'),
+    'RobotoLight': require('./assets/fonts/Roboto-Light.ttf')
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
@@ -43,6 +54,14 @@ export default function App() {
     }
   );
 
+  if (state.isLoading) {
+    return (
+      < View style={globalStyles.container} >
+        <ActivityIndicator />
+      </View >
+    );
+  }
+
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken;
@@ -62,7 +81,7 @@ export default function App() {
     try {
       await AsyncStorage.setItem(
         'userToken',
-        userToken
+        userToken,
       );
     } catch (error) {
       console.log(error);
@@ -99,9 +118,9 @@ export default function App() {
             <Stack.Screen name="SignUp" component={SignUp} />
           </Stack.Navigator>
         ) : (
-          <Tab.Navigator>
-            <Tab.Screen name="Home" component={Home} />
-          </Tab.Navigator>         
+            <Tab.Navigator>
+              <Tab.Screen name="Home" component={Home} />
+            </Tab.Navigator>
           )}
       </NavigationContainer>
     </AuthContext.Provider>
@@ -111,10 +130,10 @@ export default function App() {
 export function Home() {
   const Stack = createStackNavigator();
   return (
-      <Stack.Navigator>
-        <Stack.Screen name="Queue" component={Queue} />
-        <Stack.Screen name="JoinQueue" component={JoinQueue} />
-      </Stack.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen name="Queue" component={Queue} />
+      <Stack.Screen name="JoinQueue" component={JoinQueue} />
+    </Stack.Navigator>
   );
 }
 

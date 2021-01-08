@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles';
-import User from '../api/user';
+import Api from '../api/api';
 import { AuthContext } from '../screens/context';
 
 export default function SignIn({ navigation }) {
@@ -16,9 +16,9 @@ export default function SignIn({ navigation }) {
   const loginPressed = () => {
     setEmailError(null);
     setPasswordError(null);
-    User.login({ email: email, password: password }).then(response => {
+    Api.request('login', 'POST', { email: email, password: password }).then(response => {
       if (response.success) {
-
+        signIn(response.token);
       } else {
         if (response.type == 'validation') {
           if (response.message.email) {
@@ -65,7 +65,7 @@ export default function SignIn({ navigation }) {
 
         <TouchableOpacity
           style={globalStyles.primaryButton}
-          onPress={() => signIn("asd")}
+          onPress={() => loginPressed()}
         >
           <Text style={{ color: 'white' }}>LOG IN</Text>
         </TouchableOpacity>

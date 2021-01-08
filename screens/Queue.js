@@ -1,38 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
-import user from '../api/user';
-import { createStackNavigator } from '@react-navigation/stack';
 import { globalStyles } from '../styles';
-import JoinQueue from './joinQueue';
+import Api from '../api/api';
 
 
 export default function Queue({ route, navigation }) {
-    const [queue, setQueue] = useState(null);
+    const [userQueue, setUserQueue] = useState(null);
+    const [allQueue, setAllQueue] = useState(null);
+
+    React.useEffect(() => {
+        Api.request('getUserQueue', 'GET', {}).then(userQueue => setUserQueue(userQueue));
+        Api.request('getAllQueue', 'GET', {}).then(allQueue => setAllQueue(allQueue));
+
+        console.log(userQueue);
+        console.log(allQueue);
+    });
 
     const Queue = () => {
         if (queue) {
             return (
                 <View style={styles.UserQueueBox}>
-                    <Text style={{ fontSize: 30 }}>Your Ticket Number</Text>
-                    <Text style={{ fontSize: 50 }}>1001</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
-                            <Text style={{ fontSize: 15 }}>10 </Text>
-                            <Text style={{ fontSize: 15 }}>Patients in Waiting</Text>
-                        </View>
-                        <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
-                            <Text style={{ fontSize: 15 }}>15 mins </Text>
-                            <Text style={{ fontSize: 15 }}>Extimated Watiting Time</Text>
-                        </View>
+                    <Text style={globalStyles.h4}>Your Ticket Number</Text>
+                    <Text style={globalStyles.h1}>1001</Text>
+                    {/* <View style={{ flexDirection: 'row' }}> */}
+                    <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
+                        <Text style={globalStyles.h5}>10 </Text>
+                        <Text style={globalStyles.h5}>Patients in Waiting</Text>
                     </View>
+                    <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
+                        <Text style={globalStyles.h5}>15 mins </Text>
+                        <Text style={globalStyles.h5}>Extimated Watiting Time</Text>
+                    </View>
+                    {/* </View> */}
 
 
                     <TouchableOpacity
-                        style={styles.button}
                         onPress={() => navigation.navigate('joinQueue')}
                     >
-                        <Text style={{ color: 'white' }}>Quit Queue</Text>
+                        <Text style={globalStyles.secondaryButton}>Quit Queue</Text>
                     </TouchableOpacity>
 
                 </View>
@@ -40,12 +45,11 @@ export default function Queue({ route, navigation }) {
         } else {
             return (
                 <View style={styles.UserQueueBox}>
-                    <Text style={{ fontSize: 20 }}>You haven't join a Queue Yet</Text>
+                    <Text style={globalStyles.h4}>You haven't join a Queue Yet</Text>
                     <TouchableOpacity
-                        style={styles.button}
                         onPress={() => navigation.navigate('JoinQueue')}
                     >
-                        <Text style={{ color: 'white', fontSize: 25 }}>Join Queue</Text>
+                        <Text style={globalStyles.primaryButton}>Join Queue</Text>
                     </TouchableOpacity>
                 </View>
             );
@@ -53,7 +57,7 @@ export default function Queue({ route, navigation }) {
     }
 
     return (
-        
+
         <ScrollView style={styles.container}>
             <Queue />
             <View style={{ alignItems: 'center', marginVertical: 20 }}>
@@ -111,9 +115,8 @@ const styles = StyleSheet.create({
         elevation: 3,
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 0.5,
         borderRadius: 40,
-        height: 300
+        height: 400
     },
     queueInfo: {
         marginVertical: 10,

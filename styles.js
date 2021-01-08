@@ -20,12 +20,22 @@ export const globalStyles = StyleSheet.create({
         alignItems:'center',
       },
       primaryButton:{
-        marginTop: 20,
-        backgroundColor: '#5DADE2',
-        alignItems: 'center',
-        borderRadius: 20,
+        backgroundColor: '#3498DB',
         padding: 10,
-        marginHorizontal: 40
+        borderRadius: 15,
+        color: 'white',
+        fontSize: 20,
+        marginTop: 20,
+        fontFamily: 'RobotoRegular'
+      },
+      secondaryButton:{
+        backgroundColor: '#E74C3C',
+        padding: 10,
+        borderRadius: 15,
+        color: 'white',
+        fontSize: 20,
+        marginTop: 20,
+        fontFamily: 'RobotoRegular'
       },    
       appTitle:{
         fontSize: 30,
@@ -47,8 +57,26 @@ export const globalStyles = StyleSheet.create({
         resizeMode: 'contain',
         borderRadius: 30
       },
+      h1:{
+        fontSize: 50,
+        fontFamily: 'RobotoBold'
+      },
+      h2:{
+        fontSize: 40,
+        fontFamily: 'RobotoBold'
+      },
       h3:{
         fontSize: 30,
-      }
+        fontFamily: 'RobotoRegular',
+      },
+      h4:{
+        fontSize: 20,
+        fontFamily: 'RobotoRegular'
+      },
+      h5:{
+        fontSize: 15,
+        fontFamily: 'RobotoRegular'
+      },
+      
 
 });

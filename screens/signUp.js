@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles';
-import User from '../api/user';
+import Api from '../api/api';
 
 
 export default function SignUp({ navigation }) {
@@ -18,7 +18,7 @@ export default function SignUp({ navigation }) {
     setEmailError(null);
     setPasswordError(null);
     setConfirmedPasswordError(null);
-    User.register({ email: email, password: password, password_confirmation: password_confirmation, role: 'patient' }).then(response => {
+    Api.request('register','POST',{ email: email, password: password, password_confirmation: password_confirmation, role: 'patient' }).then(response => {
       if (response.success) {
         navigation.navigate('Queue', {
           user: response.user,
