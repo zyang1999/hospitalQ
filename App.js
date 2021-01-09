@@ -4,13 +4,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from './screens/context';
-import { globalStyles } from './styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
 import Queue from './screens/Queue';
 import JoinQueue from './screens/joinQueue';
+import DoctorHome from './screens/DoctorHome';
+import PharmacistHome from './screens/PharmacistHome';
 
 export default function App() {
 
@@ -20,10 +21,6 @@ export default function App() {
     'RobotoLight': require('./assets/fonts/Roboto-Light.ttf')
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
-  }
-
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -31,6 +28,7 @@ export default function App() {
           return {
             ...prevState,
             userToken: action.token,
+            userRole: action.role,
             isLoading: false,
           };
         case 'SIGN_IN':
@@ -38,6 +36,8 @@ export default function App() {
             ...prevState,
             isSignout: false,
             userToken: action.token,
+            userRole: action.role,
+            role: action.role
           };
         case 'SIGN_OUT':
           return {
@@ -54,35 +54,27 @@ export default function App() {
     }
   );
 
-  if (state.isLoading) {
-    return (
-      < View style={globalStyles.container} >
-        <ActivityIndicator />
-      </View >
-    );
-  }
-
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken;
+      let userRole;
 
       try {
         userToken = await AsyncStorage.getItem('userToken');
+        userRole = await AsyncStorage.getItem('userRole');
       } catch (e) {
         console.log(e);
       }
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+      dispatch({ type: 'RESTORE_TOKEN', token: userToken, role: userRole });
     };
 
     bootstrapAsync();
   }, []);
 
-  const _storeData = async (userToken) => {
+  const _storeData = async (userToken, userRole) => {
     try {
-      await AsyncStorage.setItem(
-        'userToken',
-        userToken,
-      );
+      await AsyncStorage.setItem('userToken', userToken);
+      await AsyncStorage.setItem('userRole', userRole);
     } catch (error) {
       console.log(error);
     }
@@ -90,17 +82,17 @@ export default function App() {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async userToken => {
-        _storeData(userToken);
-        dispatch({ type: 'SIGN_IN', token: userToken });
+      signIn: async (userToken, userRole) => {
+        _storeData(userToken, userRole);
+        dispatch({ type: 'SIGN_IN', token: userToken, role: userRole });
       },
       signOut: () => {
         _storeData(null);
         dispatch({ type: 'SIGN_OUT' });
       },
-      signUp: async userToken => {
-        _storeData(userToken);
-        dispatch({ type: 'SIGN_IN' });
+      signUp: async (userToken, userRole) => {
+        _storeData(userToken, userRole);
+        dispatch({ type: 'SIGN_IN', token: userToken, role: userRole });
       },
     }),
     []
@@ -109,22 +101,48 @@ export default function App() {
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
 
-  return (
-    <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        {state.userToken == null ? (
-          <Stack.Navigator>
-            <Stack.Screen name="SignIn" component={SignIn} />
-            <Stack.Screen name="SignUp" component={SignUp} />
-          </Stack.Navigator>
-        ) : (
-            <Tab.Navigator>
-              <Tab.Screen name="Home" component={Home} />
-            </Tab.Navigator>
-          )}
-      </NavigationContainer>
-    </AuthContext.Provider>
-  );
+  const Screen = () => {
+    if (state.userToken == null) {
+      return (
+        <Stack.Navigator>
+          <Stack.Screen name="SignIn" component={SignIn} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+        </Stack.Navigator>
+      );
+    } else {
+      if (state.userRole == 'PATIENT') {
+        return (
+          <Tab.Navigator>
+            <Tab.Screen name="Home" component={Home} />
+          </Tab.Navigator>
+        );
+      } else if (state.userRole == 'DOCTOR') {
+        return (
+          <Tab.Navigator>
+            <Tab.Screen name="DoctorHome" component={DoctorHome} />
+          </Tab.Navigator>
+        );
+      } else {
+        return (
+          <Tab.Navigator>
+            <Tab.Screen name="PharmacistHome" component={PharmacistHome} />
+          </Tab.Navigator>
+        );
+      }
+    }
+  }
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
+    return (
+      <AuthContext.Provider value={authContext}>
+        <NavigationContainer>
+          <Screen />
+        </NavigationContainer>
+      </AuthContext.Provider >
+    );
+  }
+
 }
 
 export function Home() {

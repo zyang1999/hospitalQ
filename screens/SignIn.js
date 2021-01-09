@@ -18,7 +18,7 @@ export default function SignIn({ navigation }) {
     setPasswordError(null);
     Api.request('login', 'POST', { email: email, password: password }).then(response => {
       if (response.success) {
-        signIn(response.token);
+        signIn(response.token, response.role);
       } else {
         if (response.type == 'validation') {
           if (response.message.email) {
@@ -64,10 +64,9 @@ export default function SignIn({ navigation }) {
         {passwordError != null ? <Text style={globalStyles.errorMessage}>{passwordError}</Text> : null}
 
         <TouchableOpacity
-          style={globalStyles.primaryButton}
           onPress={() => loginPressed()}
         >
-          <Text style={{ color: 'white' }}>LOG IN</Text>
+          <Text style={globalStyles.primaryButton}>LOG IN</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

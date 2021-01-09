@@ -1,30 +1,24 @@
-class Api {
-    request(url, method, data) {
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-        let userToken;
+class Api {
+
+    request = async (url, method, data) => {
         try {
-            userToken = await AsyncStorage.getItem('userToken');
-            return fetch('http://192.168.0.197/HospitalQ/public/api' + url, {
+            let response = await fetch('http://192.168.0.197/HospitalQ/public/api/' + url, {
                 method: method,
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': userToken
+                    'Authorization': await AsyncStorage.getItem('userToken')
                 },
                 body: JSON.stringify(data)
-            }).then((response) => response.json())
-                .then((json) => {
-                    return json;
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        } catch (e) {
-            console.log(e);
+            });
+            let json = await response.json();
+            return json;
+        } catch (error) {
+            console.error(error);
         }
-
-
-    }
+    };
 }
 
 const api = new Api();

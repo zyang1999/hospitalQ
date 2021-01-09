@@ -9,17 +9,17 @@ export default function Queue({ route, navigation }) {
     const [allQueue, setAllQueue] = useState(null);
 
     React.useEffect(() => {
-        Api.request('getUserQueue', 'GET', {}).then(userQueue => setUserQueue(userQueue));
-        Api.request('getAllQueue', 'GET', {}).then(allQueue => setAllQueue(allQueue));
+        // Api.request('getUserQueue', 'GET', {}).then(userQueue => setUserQueue(userQueue));
+        // Api.request('getAllQueue', 'GET', {}).then(allQueue => setAllQueue(allQueue));
 
-        console.log(userQueue);
-        console.log(allQueue);
+        // console.log(userQueue);
+        // console.log(allQueue);
     });
 
     const Queue = () => {
         if (queue) {
             return (
-                <View style={styles.UserQueueBox}>
+                <View style={[globalStyles.UserQueueBox, {height: 400}]}>
                     <Text style={globalStyles.h4}>Your Ticket Number</Text>
                     <Text style={globalStyles.h1}>1001</Text>
                     {/* <View style={{ flexDirection: 'row' }}> */}
@@ -94,29 +94,6 @@ const styles = StyleSheet.create({
     container: {
         marginTop: 50,
         paddingHorizontal: 25,
-    },
-    button: {
-        alignItems: "center",
-        backgroundColor: "#0786ed",
-        padding: 10,
-        marginTop: 30,
-        borderRadius: 40,
-        width: 200
-    },
-    UserQueueBox: {
-        backgroundColor: 'white',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
-        elevation: 3,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 40,
-        height: 400
     },
     queueInfo: {
         marginVertical: 10,
