@@ -158,7 +158,7 @@ export const globalStyles = StyleSheet.create({
     textTransform: 'uppercase',
     backgroundColor: '#F4D03F'
   },
-  scrollViewContainer: {
+  container_2: {
     marginTop: 50,
     paddingHorizontal: 25,
   }
