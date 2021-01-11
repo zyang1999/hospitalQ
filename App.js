@@ -10,7 +10,7 @@ import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
 import Queue from './screens/Queue';
 import JoinQueue from './screens/joinQueue';
-import DoctorHome from './screens/DoctorHome';
+import StaffHome from './screens/StaffHome';
 import PharmacistHome from './screens/PharmacistHome';
 
 export default function App() {
@@ -119,7 +119,7 @@ export default function App() {
       } else if (state.userRole == 'DOCTOR') {
         return (
           <Tab.Navigator>
-            <Tab.Screen name="DoctorHome" component={DoctorHome} />
+            <Tab.Screen name="Staff" component={Staff} />
           </Tab.Navigator>
         );
       } else {
@@ -151,6 +151,15 @@ export function Home() {
     <Stack.Navigator>
       <Stack.Screen name="Queue" component={Queue} />
       <Stack.Screen name="JoinQueue" component={JoinQueue} />
+    </Stack.Navigator>
+  );
+}
+
+export function Staff() {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="StaffHome" component={StaffHome} />
     </Stack.Navigator>
   );
 }

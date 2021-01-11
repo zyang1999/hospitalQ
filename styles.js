@@ -159,7 +159,7 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: '#F4D03F'
   },
   container_2: {
-    marginTop: 50,
+    // marginTop: 50,
     paddingHorizontal: 25,
   }
 });

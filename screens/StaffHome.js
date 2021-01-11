@@ -4,30 +4,29 @@ import { globalStyles } from '../styles';
 import AppLoading from 'expo-app-loading';
 import Api from '../api/api';
 
-export default function DoctorHome() {
+export default function StaffHome() {
 
     const [ready, setReady] = useState(false);
     const [currentQueue, setCurrentQueue] = useState(null);
     const [allQueue, setAllQueue] = useState(null);
     const [waitingPatient, setWaitingPatient] = useState(false);
-
+    const [currentQueueID, setCurrentQueueID] = useState(null);
 
     React.useLayoutEffect(() => {
         Api.request('getAllQueue', 'GET', {}).then((response) => {
             setCurrentQueue(response.currentQueue);
             setAllQueue(response.allQueue);
-            if (response.allQueue.find(queue => queue.status == "WAITING")) {
-                setWaitingPatient(true);
-            };
+            setCurrentQueueID((response.currentQueue) ? response.currentQueue.id : null);
+            setWaitingPatient((response.allQueue.find(queue => queue.status == "WAITING")) ? true : false);
             setReady(true);
         });
-    }, []);
+    }, [ready]);
 
     const updateQueue = () => {
-        Api.request('updateQueue', 'POST', { location })
+        Api.request('updateQueue', 'POST', { queue_id: currentQueueID }).then(setReady(false));
     }
 
-    const renderItem = ({item}) => (
+    const renderItem = ({ item }) => (
         <View style={globalStyles.queueStatus}>
             <Text style={globalStyles.queueNumber}>{item.queue_no}</Text>
             <Text style={globalStyles.serving}>{item.status}</Text>
@@ -38,7 +37,7 @@ export default function DoctorHome() {
         if (waitingPatient) {
             return (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('joinQueue')}
+                    onPress={() => updateQueue()}
                 >
                     <Text style={globalStyles.primaryButton}>START SERVING</Text>
                 </TouchableOpacity>
@@ -47,7 +46,7 @@ export default function DoctorHome() {
         } else {
             return (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('joinQueue')}
+                    onPress={() => updateQueue()}
                     disabled={true}
                 >
                     <Text style={[globalStyles.primaryButton, { backgroundColor: '#B3B6B7' }]}>NO PATIENT WAITING</Text>
@@ -68,7 +67,7 @@ export default function DoctorHome() {
                     <Text style={[globalStyles.h3]}>Headache</Text>
 
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('joinQueue')}
+                        onPress={() => updateQueue()}
                     >
                         <Text style={globalStyles.primaryButton}>NEXT PATIENT</Text>
                     </TouchableOpacity>
@@ -91,14 +90,14 @@ export default function DoctorHome() {
                 <FlatList
                     data={allQueue}
                     renderItem={renderItem}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.id.toString()}
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={
                         <View>
 
                             <CurrentPatient />
 
-                            <Text style={[globalStyles.h3, { textAlign: 'center', marginVertical: 20 }]}>Queue Status</Text>
+                            <Text style={[globalStyles.h3, { textAlign: 'center', marginVertical: 20 }]}>Queue List</Text>
 
                             <View style={globalStyles.queueStatus}>
                                 <Text style={globalStyles.queueTitle}>Ticket Number</Text>
