@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, TextInput } from 'react-native';
+import { View, TouchableOpacity, TextInput, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 
@@ -49,9 +49,3 @@ export default function ICVerification() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    button:{
-    
-    }
-})

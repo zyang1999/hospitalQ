@@ -1,17 +1,10 @@
 import * as React from 'react';
 import * as Font from 'expo-font';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from './screens/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
-import SignIn from './screens/SignIn';
-import SignUp from './screens/SignUp';
-import Queue from './screens/Queue';
-import JoinQueue from './screens/joinQueue';
-import StaffHome from './screens/StaffHome';
-import PharmacistHome from './screens/PharmacistHome';
+import Navigation from './Navigation';
+import api from './api/api';
 
 export default function App() {
 
@@ -29,6 +22,7 @@ export default function App() {
             ...prevState,
             userToken: action.token,
             userRole: action.role,
+            status: action.status,
             isLoading: false,
           };
         case 'SIGN_IN':
@@ -37,6 +31,7 @@ export default function App() {
             isSignout: false,
             userToken: action.token,
             userRole: action.role,
+            status: action.status,
             role: action.role
           };
         case 'SIGN_OUT':
@@ -62,16 +57,18 @@ export default function App() {
       try {
         userToken = await AsyncStorage.getItem('userToken');
         userRole = await AsyncStorage.getItem('userRole');
+        api.request('getUser', 'GET', {}).then(response => {
+          dispatch({ type: 'RESTORE_TOKEN', token: userToken, role: userRole, status: response.user.status });
+        });
       } catch (e) {
         console.log(e);
       }
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken, role: userRole });
     };
 
     bootstrapAsync();
   }, []);
 
-  const _storeData = async (userToken, userRole) => {
+  const _storeData = async (userToken, userRole, status) => {
     try {
       await AsyncStorage.setItem('userToken', userToken);
       await AsyncStorage.setItem('userRole', userRole);
@@ -84,7 +81,7 @@ export default function App() {
     () => ({
       signIn: async (userToken, userRole) => {
         _storeData(userToken, userRole);
-        dispatch({ type: 'SIGN_IN', token: userToken, role: userRole });
+        dispatch({ type: 'SIGN_IN', token: userToken, role: userRole, status: status });
       },
       signOut: () => {
         _storeData(null);
@@ -92,75 +89,26 @@ export default function App() {
       },
       signUp: async (userToken, userRole) => {
         _storeData(userToken, userRole);
-        dispatch({ type: 'SIGN_IN', token: userToken, role: userRole });
+        dispatch({ type: 'SIGN_IN', token: userToken, role: userRole, status: status });
       },
     }),
     []
   );
 
-  const Stack = createStackNavigator();
-  const Tab = createBottomTabNavigator();
-
-  const Screen = () => {
-    if (state.userToken == null) {
-      return (
-        <Stack.Navigator>
-          <Stack.Screen name="SignIn" component={SignIn} />
-          <Stack.Screen name="SignUp" component={SignUp} />
-        </Stack.Navigator>
-      );
+  if (!state.isLoading) {
+    if (!fontsLoaded) {
+      return <AppLoading />;
     } else {
-      if (state.userRole == 'PATIENT') {
-        return (
-          <Tab.Navigator>
-            <Tab.Screen name="Home" component={Home} />
-          </Tab.Navigator>
-        );
-      } else if (state.userRole == 'DOCTOR') {
-        return (
-          <Tab.Navigator>
-            <Tab.Screen name="Staff" component={Staff} />
-          </Tab.Navigator>
-        );
-      } else {
-        return (
-          <Tab.Navigator>
-            <Tab.Screen name="PharmacistHome" component={PharmacistHome} />
-          </Tab.Navigator>
-        );
-      }
+      return (
+        <AuthContext.Provider value={authContext}>
+          <Navigation userToken={state.userToken} userRole={state.userRole} status={state.status} />
+        </AuthContext.Provider >
+      );
     }
-  }
-  if (!fontsLoaded) {
+  }else{
     return <AppLoading />;
-  } else {
-    return (
-      <AuthContext.Provider value={authContext}>
-        <NavigationContainer>
-          <Screen />
-        </NavigationContainer>
-      </AuthContext.Provider >
-    );
   }
 
-}
 
-export function Home() {
-  const Stack = createStackNavigator();
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Queue" component={Queue} />
-      <Stack.Screen name="JoinQueue" component={JoinQueue} />
-    </Stack.Navigator>
-  );
-}
 
-export function Staff() {
-  const Stack = createStackNavigator();
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="StaffHome" component={StaffHome} />
-    </Stack.Navigator>
-  );
 }
-
