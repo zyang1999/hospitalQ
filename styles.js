@@ -20,7 +20,7 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: '#3498DB',
+    backgroundColor: '#2196F3',
     padding: 10,
     borderRadius: 15,
     color: 'white',
@@ -163,5 +163,10 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 15,
     paddingTop: 20
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain'
   }
 });

@@ -18,7 +18,7 @@ export default function SignIn({ navigation }) {
     setPasswordError(null);
     Api.request('login', 'POST', { email: email, password: password }).then(response => {
       if (response.success) {
-        signIn(response.token, response.role, reponse.status);
+        signIn(response.token, response.user.role, response.user.status);
       } else {
         if (response.type == 'validation') {
           if (response.message.email) {

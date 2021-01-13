@@ -57,9 +57,13 @@ export default function App() {
       try {
         userToken = await AsyncStorage.getItem('userToken');
         userRole = await AsyncStorage.getItem('userRole');
-        api.request('getUser', 'GET', {}).then(response => {
-          dispatch({ type: 'RESTORE_TOKEN', token: userToken, role: userRole, status: response.user.status });
-        });
+        if (userToken) {
+          api.request('getUser', 'GET', {}).then(response => {
+            dispatch({ type: 'RESTORE_TOKEN', token: userToken, role: userRole, status: response.user.status });
+          });
+        }else{
+            dispatch({ type: 'RESTORE_TOKEN', token: userToken, role: userRole});
+        }
       } catch (e) {
         console.log(e);
       }
@@ -79,7 +83,7 @@ export default function App() {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (userToken, userRole) => {
+      signIn: async (userToken, userRole, status) => {
         _storeData(userToken, userRole);
         dispatch({ type: 'SIGN_IN', token: userToken, role: userRole, status: status });
       },
@@ -105,7 +109,7 @@ export default function App() {
         </AuthContext.Provider >
       );
     }
-  }else{
+  } else {
     return <AppLoading />;
   }
 

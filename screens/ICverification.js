@@ -1,51 +1,105 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, TextInput, Text } from 'react-native';
+import { ScrollView, View, TouchableOpacity, TextInput, Text, Image, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
-
-export default function ICVerification() {
+import { globalStyles } from '../styles';
+import { RadioButton } from 'react-native-paper';
+import Camera from './Camera';
+import Api from '../api/api';
+export default function ICVerification({ navigation }) {
     const [ICNo, setICNo] = useState('');
     const [image, setImage] = useState(null);
+    const [checked, setChecked] = useState('first');
 
     useEffect(() => {
-        (async () => {
-            if (Platform.OS !== 'web') {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Sorry, we need camera roll permissions to make this work!');
-                }
-            }
-        })();
+        Camera.cameraPermission();
     }, []);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.cancelled) {
-            setImage(result.uri);
-        }
-    };
-
     return (
-        <View>
+        <ScrollView style={globalStyles.container_2}>
+            <Text>Please insert your personal information and verified yourself with your IC.</Text>
+            <Text style={{ marginTop: 20 }}>First Name</Text>
             <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                placeholder='Your IC Number'
+                style={globalStyles.input}
                 onChangeText={IcNo => setICNo(ICNo)}
+                placeholder={'ex. John'}
             />
-            {image && <Image source={{ uri: image }} style={{ width: '100%', height: 200 }} />}
+            <Text>Last Name</Text>
+            <TextInput
+                style={globalStyles.input}
+                onChangeText={IcNo => setICNo(ICNo)}
+                placeholder={'ex. Joseph'}
+            />
+            <Text>Telephone No</Text>
+            <TextInput
+                keyboardType='numeric'
+                style={globalStyles.input}
+                onChangeText={IcNo => setICNo(ICNo)}
+                placeholder={'ex. 012-45637282'}
+            />
+            <Text>IC Number</Text>
+            <TextInput
+                keyboardType='numeric'
+                style={globalStyles.input}
+                onChangeText={IcNo => setICNo(ICNo)}
+                placeholder={'ex. 010111-01-0111'}
+            />
+            <Text>Gender</Text>
+            <View style={{ paddingHorizontal: 20 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Text style={{ marginRight: 45 }}>Male</Text>
+                    <RadioButton
+                        color='#2196F3'
+                        value="Male"
+                        status={checked === 'first' ? 'checked' : 'unchecked'}
+                        onPress={() => setChecked('first')}
+                    />
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Text style={{ marginRight: 30 }}>Female</Text>
+                    <RadioButton
+                        color='#2196F3'
+                        value="Female"
+                        status={checked === 'second' ? 'checked' : 'unchecked'}
+                        onPress={() => setChecked('second')}
+                    />
+                </View>
+            </View>
+            <Text>IC Photo</Text>
+            {image
+                ? <Image source={{ uri: image }} style={styles.image} />
+                : <View style={[globalStyles.image,{justifyContent: 'center', backgroundColor: '#CCD1D1'}]}>
+                    <Text style={{ textAlign: 'center' }}>No photo is taken yet</Text>
+                </View>
+            }
+
             <TouchableOpacity
-                onPress={pickImage}
+                style={{ alignItems: 'center' }}
+                onPress={() => Camera.pickImage().then(image => setImage(image))}
             >
-                <Text>Upload an image of your IC picture</Text>
+                {image
+                    ? <Text style={styles.button}>Retake IC Photo</Text>
+                    : <Text style={styles.button}>Take IC Photo</Text>
+                }
             </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Selfie')}
+            >
+                <Text style={[globalStyles.primaryButton, { marginBottom: 50 }]}>Next</Text>
+            </TouchableOpacity>
+
+        </ScrollView >
     );
 }
+
+const styles = StyleSheet.create({
+    button: {
+        marginVertical: 10,
+        backgroundColor: '#29B6F6',
+        paddingVertical: 10,
+        textAlign: 'center',
+        borderRadius: 20,
+        width: 200,
+        color: 'white'
+    },
+
+});

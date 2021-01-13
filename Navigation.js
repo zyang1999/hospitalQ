@@ -12,6 +12,7 @@ import StaffHome from './screens/StaffHome';
 import SettingMenu from './screens/SettingMenu';
 import Account from './screens/Account';
 import ICVerification from './screens/ICverification';
+import Selfie from './screens/Selfie';
 
 
 export default function Navigation(props) {
@@ -62,6 +63,7 @@ export default function Navigation(props) {
                 return (
                     <Stack.Navigator>
                         <Stack.Screen name="ICVerification" component={ICVerification} />
+                        <Stack.Screen name="Selfie" component={Selfie} />
                     </Stack.Navigator>
                 );
             } else {
