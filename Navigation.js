@@ -3,7 +3,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AppLoading from 'expo-app-loading';
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
 import Queue from './screens/Queue';
@@ -13,6 +12,7 @@ import SettingMenu from './screens/SettingMenu';
 import Account from './screens/Account';
 import ICVerification from './screens/ICverification';
 import Selfie from './screens/Selfie';
+import PendingVerification from './screens/PendingVerification';
 
 
 export default function Navigation(props) {
@@ -64,9 +64,18 @@ export default function Navigation(props) {
                     <Stack.Navigator>
                         <Stack.Screen name="ICVerification" component={ICVerification} />
                         <Stack.Screen name="Selfie" component={Selfie} />
+                        <Stack.Screen name="PendingVerification" component={PendingVerification} />
                     </Stack.Navigator>
                 );
-            } else {
+            } else if (props.status == 'VERIFYING') {
+                return (
+                    <Stack.Navigator>
+                        <Stack.Screen name="PendingVerification" component={PendingVerification} />
+                    </Stack.Navigator>
+                );
+            }
+
+            else {
                 if (props.userRole == 'PATIENT') {
                     return (
                         <Tab.Navigator>

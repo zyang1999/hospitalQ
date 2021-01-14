@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 class Camera {
     cameraPermission = async () => {
         if (Platform.OS !== 'web') {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
                 alert('Sorry, we need camera permissions to make this work!');
             }
@@ -11,14 +11,15 @@ class Camera {
     }
 
     pickImage = async () => {
-        let result = await ImagePicker.launchCameraAsync({
+        let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            quality: 1,
+            quality: 0.5,
+            base64: true
         });
 
         if (!result.cancelled) {
-            return result.uri;
+            return result.base64;
         }
     };
 }

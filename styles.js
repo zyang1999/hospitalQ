@@ -45,7 +45,11 @@ export const globalStyles = StyleSheet.create({
   },
   errorMessage: {
     paddingLeft: 10,
-    color: 'red'
+    color: 'white',
+    backgroundColor: '#EF5350',
+    padding: 10,
+    borderRadius: 10,
+    marginVertical: 10
   },
   barCodeScanner: {
     marginVertical: '20%',

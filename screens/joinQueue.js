@@ -18,10 +18,11 @@ export default function joinQueue({ navigation }) {
 
   const handleBarCodeScanned = async ({ data }) => {
     setScanned(true);
-    if (data.includes('192.168.0.198')) {
+
+    if (data.includes('192.168.0.197')) {
       try {
         userToken = await AsyncStorage.getItem('userToken');
-        Api.request('joinQueue', 'POST', { userToken: userToken, location: JSON.stringify(data.location) })
+        Api.request('joinQueue', 'POST', { userToken: userToken, location: 'CONSULTATION' })
           .catch(handleError());
         navigation.goBack();
       } catch (e) {

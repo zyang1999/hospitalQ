@@ -91,7 +91,7 @@ export default function App() {
         _storeData(null);
         dispatch({ type: 'SIGN_OUT' });
       },
-      signUp: async (userToken, userRole) => {
+      signUp: async (userToken, userRole, status) => {
         _storeData(userToken, userRole);
         dispatch({ type: 'SIGN_IN', token: userToken, role: userRole, status: status });
       },

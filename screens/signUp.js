@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles';
 import Api from '../api/api';
+import { AuthContext } from '../screens/context';
 
 
 export default function SignUp({ navigation }) {
+  const { signIn } = React.useContext(AuthContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,11 +20,9 @@ export default function SignUp({ navigation }) {
     setEmailError(null);
     setPasswordError(null);
     setConfirmedPasswordError(null);
-    Api.request('register','POST',{ email: email, password: password, password_confirmation: password_confirmation, role: 'patient' }).then(response => {
+    Api.request('register','POST',{ email: email, password: password, password_confirmation: password_confirmation, role: 'PATIENT' }).then(response => {
       if (response.success) {
-        navigation.navigate('Queue', {
-          user: response.user,
-        });
+        signIn(response.token, response.user.role, response.user.status);
       } else {
         if (response.message.email) {
           setEmailError(response.message.email);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, FlatList } from 'react-native';
+import { Text, View, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { globalStyles } from '../styles';
 import Api from '../api/api';
 import AppLoading from 'expo-app-loading';
@@ -9,11 +9,13 @@ export default function Queue({ route, navigation }) {
     const [ready, setReady] = useState(false);
     const [userQueue, setUserQueue] = useState(null);
     const [allQueue, setAllQueue] = useState(null);
+    const [patientWaiting, setPatientWaiting] = useState(null);
 
     React.useEffect(() => {
         Api.request('getUserQueue', 'GET', {}).then(response => {
             setUserQueue(response.userQueue);
             setAllQueue(response.allQueue);
+            setPatientWaiting(response.patientWaiting);
             setReady(true)
         });
     }, []);
@@ -97,7 +99,7 @@ export default function Queue({ route, navigation }) {
         } else {
             return (
                 <View style={globalStyles.container_2}>
-                    <View style={[globalStyles.UserQueueBox, { height: 200 }]}>
+                    <View style={[globalStyles.UserQueueBox, { flex: 0.6 }]}>
                         <Text style={globalStyles.h4}>You haven't join a Queue Yet</Text>
                         <TouchableOpacity
                             onPress={() => navigation.navigate('JoinQueue')}
@@ -105,26 +107,13 @@ export default function Queue({ route, navigation }) {
                             <Text style={globalStyles.primaryButton}>Join Queue</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={globalStyles.UserQueueBox}>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={globalStyles.h5}>Patient Wating</Text>
-                            <Text style={globalStyles.h2}>25</Text>
-                        </View>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={globalStyles.h5}>Average Waiting Time</Text>
-                            <Text style={globalStyles.h2}>25 min</Text>
+                    <View style={[globalStyles.UserQueueBox, {flex: 0.3}]}>
+                        <View style={{alignItems: 'center'}}>
+                            <Text style={globalStyles.h5}>Number of Patient Wating</Text>
+                            <Text style={globalStyles.h2}>{patientWaiting}</Text>
                         </View>
                     </View>
-                    <View style={globalStyles.UserQueueBox}>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={globalStyles.h5}>Patient Wating</Text>
-                            <Text style={globalStyles.h2}>25</Text>
-                        </View>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text style={globalStyles.h5}>Average Waiting Time</Text>
-                            <Text style={globalStyles.h2}>25 min</Text>
-                        </View>
-                    </View>
+
                 </View>
             );
         }
@@ -136,3 +125,7 @@ export default function Queue({ route, navigation }) {
         return (<AppLoading />);
     }
 }
+
+const styles = StyleSheet.create({
+
+});
