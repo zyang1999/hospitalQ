@@ -13,6 +13,7 @@ import Account from './screens/Account';
 import ICVerification from './screens/ICverification';
 import Selfie from './screens/Selfie';
 import PendingVerification from './screens/PendingVerification';
+import { TouchableOpacity } from 'react-native';
 
 
 export default function Navigation(props) {
@@ -53,6 +54,15 @@ export default function Navigation(props) {
                 <Stack.Screen name="Account" component={Account} />
             </Stack.Navigator>
         );
+    }
+
+    const Logout = ({title}) =>{
+        return(
+            <View>
+                <Text>{title}</Text>
+                <TouchableOpacity>Logout</TouchableOpacity>
+            </View>
+        )
     }
 
     const Navigation = () => {
