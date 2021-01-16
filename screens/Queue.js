@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { globalStyles } from '../styles';
-import Api from '../api/api';
+import { PrimaryButton } from '../components/Button';
+import Api from '../services/Api';
 import AppLoading from 'expo-app-loading';
 
 
@@ -19,6 +20,8 @@ export default function Queue({ route, navigation }) {
             setReady(true)
         });
     }, []);
+
+    const joinQueue = () => navigation.navigate
 
     const renderItem = ({ item }) =>
     (
@@ -101,14 +104,10 @@ export default function Queue({ route, navigation }) {
                 <View style={globalStyles.container_2}>
                     <View style={[globalStyles.UserQueueBox, { flex: 0.6 }]}>
                         <Text style={globalStyles.h4}>You haven't join a Queue Yet</Text>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('JoinQueue')}
-                        >
-                            <Text style={globalStyles.primaryButton}>Join Queue</Text>
-                        </TouchableOpacity>
+                        <PrimaryButton title='JOIN QUEUE' action={()=>navigation.navigate('JoinQueue')}/>
                     </View>
-                    <View style={[globalStyles.UserQueueBox, {flex: 0.3}]}>
-                        <View style={{alignItems: 'center'}}>
+                    <View style={[globalStyles.UserQueueBox, { flex: 0.3 }]}>
+                        <View style={{ alignItems: 'center' }}>
                             <Text style={globalStyles.h5}>Number of Patient Wating</Text>
                             <Text style={globalStyles.h2}>{patientWaiting}</Text>
                         </View>

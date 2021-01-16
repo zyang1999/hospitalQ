@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { globalStyles } from '../styles';
 import AppLoading from 'expo-app-loading';
-import Api from '../api/api';
+import Api from '../services/Api';
 
 export default function StaffHome() {
 

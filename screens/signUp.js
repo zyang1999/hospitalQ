@@ -2,39 +2,29 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles';
-import Api from '../api/api';
-import { AuthContext } from '../screens/context';
+import { AuthContext } from '../services/Context';
+import { PrimaryButton } from '../components/Button';
+import ErrorMessage from '../components/ErrorMessage';
 
 
 export default function SignUp({ navigation }) {
-  const { signIn } = React.useContext(AuthContext);
+  const { signUp } = React.useContext(AuthContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password_confirmation, setConfirmedPassword] = useState('');
+  const [error, setError] = useState({});
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmed_password_error, setConfirmedPasswordError] = useState('');
 
   const createAccount = () => {
-    setEmailError(null);
-    setPasswordError(null);
-    setConfirmedPasswordError(null);
-    Api.request('register','POST',{ email: email, password: password, password_confirmation: password_confirmation, role: 'PATIENT' }).then(response => {
-      if (response.success) {
-        signIn(response.token, response.user.role, response.user.status);
-      } else {
-        if (response.message.email) {
-          setEmailError(response.message.email);
-        }
-        if (response.message.password) {
-          setPasswordError(response.message.password);
-        }
-        if (response.message.confirmed_password) {
-          setConfirmedPasswordError(response.message.confirmed_password);
-        }
+    signUp(email, password, password_confirmation).then(response => {
+      if (response) {
+        let message = response.message;
+        setError(message);
       }
-    });
+    })
   }
 
   return (
@@ -47,7 +37,7 @@ export default function SignUp({ navigation }) {
           onChangeText={(email) => setEmail(email)}
         />
 
-        {emailError != null ? <Text style={globalStyles.errorMessage}>{emailError}</Text> : null}
+        {error.email && <ErrorMessage message={error.email} />}
 
         <TextInput
           style={globalStyles.input}
@@ -55,20 +45,15 @@ export default function SignUp({ navigation }) {
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
         />
-        {passwordError != null ? <Text style={globalStyles.errorMessage}>{passwordError}</Text> : null}
+        {error.password && <ErrorMessage message={error.password} />}
         <TextInput
           style={globalStyles.input}
           placeholder='Confirm Password'
           secureTextEntry={true}
           onChangeText={(password_confirmation) => setConfirmedPassword(password_confirmation)}
         />
-        {confirmed_password_error != null ? <Text style={globalStyles.errorMessage}>{confirmed_password_error}</Text> : null}
-        <TouchableOpacity
-          style={globalStyles.primaryButton}
-          onPress={() => createAccount()}
-        >
-          <Text style={{ color: 'white' }}>CREATE A NEW ACCOUNT</Text>
-        </TouchableOpacity>
+        {error.password_confirmation && <ErrorMessage message={error.password_confirmation} />}
+        <PrimaryButton title='CREATE A NEW ACCOUNT' action={createAccount} />
 
       </View>
     </TouchableWithoutFeedback>

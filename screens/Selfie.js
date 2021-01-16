@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { globalStyles } from '../styles';
-import Camera from './Camera';
-import Api from '../api/api';
+import { PrimaryButton, SecondaryButton } from '../components/Button';
+import Camera from '../services/Camera';
+import Api from '../services/Api';
 
-export default function Selfie({navigation}) {
+export default function Selfie({ navigation }) {
     const [image, setImage] = useState(null);
     const [error, setError] = useState({});
     const verify = () => {
-        Api.request('storeSelfie', 'POST', { selfie: image, status:'VERIFYING' }).then(response => {
+        Api.request('storeSelfie', 'POST', { selfie: image, status: 'VERIFYING' }).then(response => {
             if (response.success) {
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'PendingVerification' }],
-                  });
+                });
             } else {
                 setError(response.message);
                 console.log(error);
             }
         });
     }
+
+    const takePhoto = () => Camera.pickImage().then(image => setImage(image));
 
     return (
         <View style={[globalStyles.container_2, { flex: 1, justifyContent: 'space-around' }]}>
@@ -31,16 +34,8 @@ export default function Selfie({navigation}) {
                 </View>
             }
             {error.selfie && <Text>{error.selfie}</Text>}
-            <TouchableOpacity
-                onPress={() => Camera.pickImage().then(image => setImage(image))}
-            >
-                <Text style={[styles.button, { alignSelf: 'center' }]}>Upload Selfie</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => verify()}
-            >
-                <Text style={globalStyles.primaryButton}>Verify Account</Text>
-            </TouchableOpacity>
+            <SecondaryButton title='TAKE A SELFIE' action={takePhoto} />
+            <PrimaryButton title='VERIFY ACCOUNT' action={verify} />
         </View>
     );
 }

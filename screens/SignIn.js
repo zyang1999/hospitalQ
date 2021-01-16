@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles';
-import Api from '../api/api';
-import { AuthContext } from '../screens/context';
+import { AuthContext } from '../services/Context';
+import { PrimaryButton } from '../components/Button';
+import ErrorMessage from '../components/ErrorMessage';
 
 export default function SignIn({ navigation }) {
 
@@ -10,37 +11,20 @@ export default function SignIn({ navigation }) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [error, setError] = useState('');
 
   const loginPressed = () => {
-    setEmailError(null);
-    setPasswordError(null);
-    Api.request('login', 'POST', { email: email, password: password }).then(response => {
-      if (response.success) {
-        signIn(response.token, response.user.role, response.user.status);
-      } else {
-        if (response.type == 'validation') {
-          if (response.message.email) {
-            setEmailError(response.message.email);
-          }
-
-          if (response.message.password) {
-            setPasswordError(response.message.password);
-          }
+    signIn(email, password).then(response => {
+      if (response) {
+        let message = response.message;
+        if (response.type === 'validation') {
+          setError(message);
         } else {
-          Alert.alert(
-            "Invalid Account",
-            JSON.stringify(response.message).replace(/\"/g, ""),
-            [
-              { text: "OK" }
-            ],
-            { cancelable: false }
-          );
+          alert('Invalid Account or password');
+          setError({});
         }
       }
     });
-
   }
 
   return (
@@ -52,7 +36,7 @@ export default function SignIn({ navigation }) {
           placeholder='Email'
           onChangeText={(email) => setEmail(email)}
         />
-        {emailError != null ? <Text style={globalStyles.errorMessage}>{emailError}</Text> : null}
+        {error.email && <ErrorMessage message={error.email} />}
 
         <TextInput
           style={globalStyles.input}
@@ -61,13 +45,9 @@ export default function SignIn({ navigation }) {
           onChangeText={(password) => setPassword(password)}
         />
 
-        {passwordError != null ? <Text style={globalStyles.errorMessage}>{passwordError}</Text> : null}
+        {error.password && <ErrorMessage message={error.password} />}
 
-        <TouchableOpacity
-          onPress={() => loginPressed()}
-        >
-          <Text style={globalStyles.primaryButton}>LOG IN</Text>
-        </TouchableOpacity>
+        <PrimaryButton title='LOG IN' action={loginPressed} />
 
         <TouchableOpacity
           style={globalStyles.registerButton}

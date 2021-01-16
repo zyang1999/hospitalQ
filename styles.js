@@ -22,21 +22,24 @@ export const globalStyles = StyleSheet.create({
   primaryButton: {
     backgroundColor: '#2196F3',
     padding: 10,
-    borderRadius: 15,
+    borderRadius: 10,
     color: 'white',
     fontSize: 20,
-    marginTop: 20,
-    fontFamily: 'RobotoRegular',
-    textAlign: 'center'
+    marginVertical: 10,
+    fontFamily: 'RobotoBold',
+    textAlign: 'center',
+    elevation: 2
   },
   secondaryButton: {
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#607D8B',
     padding: 10,
-    borderRadius: 15,
+    borderRadius: 10,
     color: 'white',
     fontSize: 20,
-    marginTop: 20,
-    fontFamily: 'RobotoRegular'
+    marginVertical: 10,
+    fontFamily: 'RobotoBold',
+    textAlign: 'center',
+    elevation: 2
   },
   appTitle: {
     fontSize: 30,

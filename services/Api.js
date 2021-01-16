@@ -12,10 +12,10 @@ class Api {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': userToken
-                }
+                }, 
             };
             if (method == 'POST') {
-                second_argument.body = data;
+                second_argument.body = JSON.stringify(data);
             }
             let response = await fetch(baseUrl + url, second_argument);
             let json = await response.json();

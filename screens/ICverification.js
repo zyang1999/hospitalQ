@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, TouchableOpacity, TextInput, Text, Image, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { globalStyles } from '../styles';
 import { RadioButton } from 'react-native-paper';
-import Camera from './Camera';
-import Api from '../api/api';
-import { NavigationHelpersContext } from '@react-navigation/native';
+import { PrimaryButton, SecondaryButton } from '../components/Button';
+import ErrorMessage from '../components/ErrorMessage';
+import Camera from '../services/Camera';
+import Api from '../services/Api';
+
 export default function ICVerification({ navigation }) {
     const [first_name, setFirstName] = useState(null);
     const [last_name, setLastName] = useState(null);
@@ -15,11 +16,9 @@ export default function ICVerification({ navigation }) {
     const [gender, setGender] = useState('Male');
     const [error, setError] = useState({});
 
-
     useEffect(() => {
         Camera.cameraPermission();
     }, []);
-
 
     const storeCredential = () => {
         let data = {
@@ -28,17 +27,18 @@ export default function ICVerification({ navigation }) {
             telephone: telephone,
             IC_no: IC_no,
             IC_image: image,
-            gender: gender ,
+            gender: gender,
         };
         Api.request('storeVerificationCredential', 'POST', data).then(response => {
-            if(response.success){
+            if (response.success) {
                 navigation.navigate('Selfie');
-            }else{
-                console.log(response);
+            } else {
                 setError(response.message);
             }
         });
     }
+
+    const takePhoto = () => Camera.pickImage().then(image => setImage(image));
 
     return (
         <ScrollView style={globalStyles.container_2}>
@@ -49,14 +49,14 @@ export default function ICVerification({ navigation }) {
                 onChangeText={first_name => setFirstName(first_name)}
                 placeholder={'ex. John'}
             />
-            {error.first_name && <Text style={globalStyles.errorMessage}>{error.first_name}</Text>}
+            {error.first_name && <ErrorMessage message={error.first_name} />}
             <Text>Last Name</Text>
             <TextInput
                 style={globalStyles.input}
                 onChangeText={last_name => setLastName(last_name)}
                 placeholder={'ex. Joseph'}
             />
-            {error.last_name && <Text style={globalStyles.errorMessage}>{error.last_name}</Text>}
+            {error.last_name && <ErrorMessage message={error.last_name} />}
             <Text>Telephone No</Text>
             <TextInput
                 keyboardType='numeric'
@@ -64,7 +64,7 @@ export default function ICVerification({ navigation }) {
                 onChangeText={telephone => setTelephone(telephone)}
                 placeholder={'ex. 012-45637282'}
             />
-            {error.telephone && <Text style={globalStyles.errorMessage}>{error.telephone}</Text>}
+            {error.telephone && <ErrorMessage message={error.telephone} />}
             <Text>IC Number</Text>
             <TextInput
                 keyboardType='numeric'
@@ -72,7 +72,7 @@ export default function ICVerification({ navigation }) {
                 onChangeText={IC_no => setICNo(IC_no)}
                 placeholder={'ex. 010111-01-0111'}
             />
-            {error.IC_no && <Text style={globalStyles.errorMessage}>{error.IC_no}</Text>}
+            {error.IC_no && <ErrorMessage message={error.IC_no} />}
             <Text>Gender</Text>
             <View style={{ paddingHorizontal: 20 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -101,36 +101,12 @@ export default function ICVerification({ navigation }) {
                     <Text style={{ textAlign: 'center' }}>No photo is taken yet</Text>
                 </View>
             }
-            {error.IC_image && <Text style={globalStyles.errorMessage}>{error.IC_image}</Text>}
+            {error.IC_image && <ErrorMessage message={error.IC_image} />}
 
-            <TouchableOpacity
-                style={{ alignItems: 'center' }}
-                onPress={() => Camera.pickImage().then(image => setImage(image))}
-            >
-                {image
-                    ? <Text style={styles.button}>Re-upload IC Photo</Text>
-                    : <Text style={styles.button}>Upload IC Photo</Text>
-                }
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => storeCredential()}
-            >
-                <Text style={[globalStyles.primaryButton, { marginBottom: 50 }]}>Next</Text>
-            </TouchableOpacity>
-
+            <SecondaryButton title={image ? 'RETAKE IC PHOTO' : 'TAKE IC PHOTO'} action={takePhoto} />
+            <View style={{ marginBottom: 20 }}>
+                <PrimaryButton title='NEXT' action={storeCredential} />
+            </View>
         </ScrollView >
     );
 }
-
-const styles = StyleSheet.create({
-    button: {
-        marginVertical: 10,
-        backgroundColor: '#29B6F6',
-        paddingVertical: 10,
-        textAlign: 'center',
-        borderRadius: 20,
-        width: 200,
-        color: 'white'
-    },
-
-});

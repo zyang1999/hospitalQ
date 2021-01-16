@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { globalStyles } from '../styles';
-import Api from '../api/api';
+import Api from '../services/Api';
 import { set } from 'react-native-reanimated';
 
 export default function joinQueue({ navigation }) {

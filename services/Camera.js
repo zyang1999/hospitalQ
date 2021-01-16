@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 class Camera {
     cameraPermission = async () => {
         if (Platform.OS !== 'web') {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
                 alert('Sorry, we need camera permissions to make this work!');
             }
@@ -11,10 +11,10 @@ class Camera {
     }
 
     pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
+        let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            quality: 0.5,
+            quality: 1,
             base64: true
         });
 
