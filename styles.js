@@ -92,17 +92,10 @@ export const globalStyles = StyleSheet.create({
   },
   UserQueueBox: {
     backgroundColor: 'white',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
     elevation: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 40,
+    borderRadius: 20,
     marginTop: 20
   },
   queueInfo: {
@@ -115,13 +108,6 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   queueTitle: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
     elevation: 3,
     alignItems: 'center',
     justifyContent: 'center',
@@ -143,7 +129,8 @@ export const globalStyles = StyleSheet.create({
     width: '48%',
     marginVertical: 5,
     textTransform: 'uppercase',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    elevation: 1
   },
   serving: {
     fontSize: 20,
@@ -169,7 +156,6 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 15,
-    paddingTop: 20
   },
   image: {
     width: '100%',

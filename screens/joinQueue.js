@@ -3,11 +3,11 @@ import { Text, View, StyleSheet, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { globalStyles } from '../styles';
 import Api from '../services/Api';
-import { set } from 'react-native-reanimated';
 
-export default function joinQueue({ navigation }) {
+export default function joinQueue({ navigation, route }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+
 
   useEffect(() => {
     (async () => {
@@ -17,14 +17,13 @@ export default function joinQueue({ navigation }) {
   }, []);
 
   const handleBarCodeScanned = async ({ data }) => {
+    let json;
     setScanned(true);
-
-    if (data.includes('192.168.0.197')) {
+    json = JSON.parse(data);
+    if (json.server === '192.168.0.197') {
       try {
-        userToken = await AsyncStorage.getItem('userToken');
-        Api.request('joinQueue', 'POST', { userToken: userToken, location: 'CONSULTATION' })
-          .catch(handleError());
-        navigation.goBack();
+        Api.request('joinQueue', 'POST', { location: json.location })
+          .then(navigation.navigate('Queue', { refresh: true }));
       } catch (e) {
         handleError();
       }

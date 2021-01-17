@@ -14,6 +14,7 @@ import Account from '../screens/Account';
 import ICVerification from '../screens/ICverification';
 import Selfie from '../screens/Selfie';
 import PendingVerification from '../screens/PendingVerification';
+import Reason from '../screens/Reason';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -37,6 +38,7 @@ export default function Navigation(props) {
             <Stack.Navigator>
                 <Stack.Screen name="Queue" component={Queue} />
                 <Stack.Screen name="JoinQueue" component={JoinQueue} />
+                <Stack.Screen name="Reason" component={Reason} />
             </Stack.Navigator>
         );
     }

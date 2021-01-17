@@ -8,8 +8,6 @@ import Api from './Api';
 
 export default function Authentication() {
 
-  const [apiResponse, setApiResponse] = React.useState({});
-
   const fontsLoaded = loadFont();
 
   const initialState = {
