@@ -5,7 +5,7 @@ class Api {
     request = async (url, method, data) => {
         try {
             let userToken = 'Bearer ' + await AsyncStorage.getItem('userToken');
-            let baseUrl = 'http://192.168.0.197/HospitalQ/public/api/';
+            let baseUrl = 'http://192.168.0.124/HospitalQ/public/api/';
             let second_argument = {
                 method: method,
                 headers: {

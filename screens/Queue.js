@@ -12,8 +12,6 @@ export default function Queue({ navigation, route }) {
     const [allQueue, setAllQueue] = useState(null);
     const [patientWaiting, setPatientWaiting] = useState(null);
 
-
-
     React.useEffect(() => {
         Api.request('getUserQueue', 'GET', {}).then(response => {
             setUserQueue(response.userQueue);

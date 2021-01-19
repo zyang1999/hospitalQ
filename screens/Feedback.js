@@ -8,17 +8,7 @@ export default function Login({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.appTitle}>Please leave your feedback on the services!</Text>
-            <TextInput
-                style={styles.input}
-                placeholder='Feedback'
-                onChangeText={(feedback) => setFeedback(feedback)}
-            />
-
-            <TouchableOpacity>
-                <Text style={{ color: 'blue' }}>Send Feedback</Text>
-            </TouchableOpacity>
-
+            <Text>Feedback</Text>
         </View>
     );
 }

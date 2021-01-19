@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Queue from '../screens/Queue';
@@ -15,6 +16,9 @@ import ICVerification from '../screens/ICverification';
 import Selfie from '../screens/Selfie';
 import PendingVerification from '../screens/PendingVerification';
 import Reason from '../screens/Reason';
+import Feedback from '../screens/Feedback';
+import History from '../screens/History';
+import QueueDetails from '../screens/QueueDetails';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -74,6 +78,16 @@ export default function Navigation(props) {
 
     }
 
+    const HistoryStack = () => {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen name='History' component={History} />
+                <Stack.Screen name="Feedback" component={Feedback} />
+                <Stack.Screen name="QueueDetails" component={QueueDetails} />
+            </Stack.Navigator>
+        );
+    }
+
     const Navigation = () => {
         if (props.userToken == null) {
             return (<Default />);
@@ -128,9 +142,14 @@ export default function Navigation(props) {
                                 options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
                             />
                             <Tab.Screen
+                                name="HistoryStack"
+                                component={HistoryStack}
+                                options={{ tabBarIcon: () => <FontAwesome name="history" size={24} color="black" /> }}
+                            />
+                            <Tab.Screen
                                 name="Setting"
                                 component={Setting}
-                                options={{tabBarIcon:()=><AntDesign name="setting" size={24} color="black" />}}
+                                options={{ tabBarIcon: () => <AntDesign name="setting" size={24} color="black" /> }}
                             />
                         </Tab.Navigator>
                     );

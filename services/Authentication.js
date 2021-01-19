@@ -134,6 +134,7 @@ export default function Authentication() {
       );
     }
   } else {
+    
     return <AppLoading />;
   }
 }
