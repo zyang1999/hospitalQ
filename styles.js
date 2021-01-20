@@ -41,6 +41,17 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
     elevation: 2
   },
+  dangerButton: {
+    backgroundColor: '#607D8B',
+    padding: 10,
+    borderRadius: 10,
+    color: 'white',
+    fontSize: 20,
+    marginVertical: 10,
+    fontFamily: 'RobotoBold',
+    textAlign: 'center',
+    elevation: 2
+  },
   appTitle: {
     fontSize: 30,
     textAlign: 'center',

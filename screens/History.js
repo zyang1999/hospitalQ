@@ -1,26 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import Api from '../services/Api';
 import { globalStyles } from '../styles';
 
-export default function History({ navigation }) {
+export default function History({ navigation, route }) {
+    const [queueHistory, setQueueHistory] = useState(null);
+    const [refresh, setRefresh] = useState(true);
 
-    const data = [
-        {
-            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-            created_at: '19-1-2021 11:00 pm',
-            location: 'CONSULTATION'
-        },
-        {
-            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-            created_at: '19-1-2021 11:00 pm',
-            location: 'CONSULTATION'
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            created_at: '19-1-2021 11:00 pm',
-            location: 'CONSULTATION'
-        }
-    ];
+    useEffect(() => {
+        Api.request('getQueueHistory', 'GET', {}).then(response => {
+            setQueueHistory(response.queueHistory);
+            setRefresh(false);
+        });
+    }, [refresh]);
 
     const renderItem = ({ item }) => (
         <TouchableWithoutFeedback onPress={() => navigation.navigate('QueueDetails', { details: item })}>
@@ -30,11 +22,23 @@ export default function History({ navigation }) {
                     <Text style={globalStyles.h4}>{item.location}</Text>
                 </View>
                 <View>
-                    <TouchableOpacity
-                        style={styles.ratingButton}
-                    >
-                        <Text>Rate</Text>
-                    </TouchableOpacity>
+                    {item.reason
+                        ?
+                        <TouchableOpacity
+                            style={styles.disabledButton}
+                            disabled={true}
+                        >
+                            <Text style={{ color: 'white' }}>Feedback Sent</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity
+                            style={styles.feedbackButton}
+                            onPress={() => navigation.navigate('Feedback', { queueId: item.id, setRefresh: (value)=>setRefresh(value) })}
+                        >
+                            <Text style={{ color: 'white' }}>Send Feedback</Text>
+                        </TouchableOpacity>
+                    }
+
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -43,9 +47,9 @@ export default function History({ navigation }) {
     const History = () => {
         return (
             <FlatList
-                data={data}
+                data={queueHistory}
                 renderItem={renderItem}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id.toString()}
             />
         );
     }
@@ -75,8 +79,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center'
     },
-    ratingButton: {
+    feedbackButton: {
         backgroundColor: '#42A5F5',
+        padding: 10,
+        borderRadius: 10
+    },
+    disabledButton: {
+        backgroundColor: '#808B96',
         padding: 10,
         borderRadius: 10
     }
