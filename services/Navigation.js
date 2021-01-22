@@ -19,6 +19,7 @@ import Reason from '../screens/Reason';
 import Feedback from '../screens/Feedback';
 import History from '../screens/History';
 import QueueDetails from '../screens/QueueDetails';
+import MakeAppointment from '../screens/MakeAppointment';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -87,6 +88,13 @@ export default function Navigation(props) {
             </Stack.Navigator>
         );
     }
+    const AppointmentStack = () => {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen name='MakeAppointment' component={MakeAppointment} />
+            </Stack.Navigator>
+        );
+    }
 
     const Navigation = () => {
         if (props.userToken == null) {
@@ -139,6 +147,11 @@ export default function Navigation(props) {
                             <Tab.Screen
                                 name="Patient"
                                 component={Patient}
+                                options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
+                            />
+                            <Tab.Screen
+                                name = "AppointmentStack"
+                                component={AppointmentStack}
                                 options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
                             />
                             <Tab.Screen
