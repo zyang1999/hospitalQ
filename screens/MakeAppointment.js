@@ -1,45 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, FlatList } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { globalStyles } from '../styles';
 import { Picker } from '@react-native-picker/picker';
 import { PrimaryButton, SecondaryButton } from '../components/Button';
-import { Calendar } from 'react-native-calendars';
+
 import api from '../services/Api';
 
-export default function MakeAppointment() {
-
+export default function MakeAppointment({navigation}) {
+    const [specialtyId, setSpecialty] = useState('All');
+    const [doctorId, setDoctor] = useState('All');
     const [specialties, setSpecialties] = useState({});
-    const [doctors, setDoctor] = useState({});
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [doctors, setDoctors] = useState({});
+    
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        api.request('getSpecialties', 'GET', {}).then(response => {
+        api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
             setSpecialties(response.specialties);
         });
 
-        api.request('getDoctorList', 'GET', {}).then(response=>{
-            setDoctor(response.doctors);
+        api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
+            setDoctors(response.doctors);
             setReady(true);
         });
 
-    }, [])
-
-    const data = [
-        {
-            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-            title: 'First Item',
-        },
-        {
-            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-            title: 'Second Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-    ];
-
+    }, [ready])
 
     const DropDown = (props) => {
         return (
@@ -48,31 +33,14 @@ export default function MakeAppointment() {
                 <Picker
                     selectedValue={props.initialValue}
                     style={styles.picker}
-                    onValueChange={(itemValue) => props.action(itemValue)}>
-                    <Picker.Item label="All" value="All" />
+                    onValueChange={(id) => {
+                        props.action(id);
+                        setReady(false);
+                    }}>
+                    {props.filter == 'All' && <Picker.Item label="All" value="All" />}
                     {props.dropdown}
                 </Picker>
             </View>
-        );
-    }
-
-    const renderItem = ({ item }) => {
-        return (
-            <View>
-                <Text>{item.title}</Text>
-            </View>
-        );
-    }
-
-    const Schedule = () => {
-        return (
-            <TouchableWithoutFeedback>
-                <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                />
-            </TouchableWithoutFeedback>
         );
     }
 
@@ -86,21 +54,18 @@ export default function MakeAppointment() {
         });
         return (
             <View style={globalStyles.container_2}>
-                <DropDown header='Department' initialValue={'All'} action={setSpecialties} dropdown={specialtyDropDown} />
-                <DropDown header='Doctor' initialValue={'All'} action={setDoctor} array={doctors} dropdown={doctorDropDown} />
-                <Text>Appointment Date</Text>
-                <Calendar
-                    markedDates={{
-                        [date]: { selected: true, selectedColor: 'blue' },
-                    }}
-                    onDayPress={(day) => { setDate(day.dateString) }}
-                />
-                <Schedule />
+                <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} />
+                <DropDown header='Doctors' initialValue={doctorId} filter={specialtyId} action={setDoctor} array={doctors} dropdown={doctorDropDown} />
+                <PrimaryButton title='NEXT' action={()=>navigation.navigate('BookAppointment', {doctorId: doctorId})}/> 
             </View>
 
         );
     } else {
-        return (<View></View>)
+        return (
+            <View style={[globalStyles.container_2, { justifyContent: 'center' }]}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
     }
 
 

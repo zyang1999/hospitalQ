@@ -20,6 +20,7 @@ import Feedback from '../screens/Feedback';
 import History from '../screens/History';
 import QueueDetails from '../screens/QueueDetails';
 import MakeAppointment from '../screens/MakeAppointment';
+import BookAppointment from '../screens/BookAppointment';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -88,10 +89,12 @@ export default function Navigation(props) {
             </Stack.Navigator>
         );
     }
+    
     const AppointmentStack = () => {
         return (
             <Stack.Navigator>
                 <Stack.Screen name='MakeAppointment' component={MakeAppointment} />
+                <Stack.Screen name='BookAppointment' component={BookAppointment} />
             </Stack.Navigator>
         );
     }
@@ -150,7 +153,7 @@ export default function Navigation(props) {
                                 options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
                             />
                             <Tab.Screen
-                                name = "AppointmentStack"
+                                name="AppointmentStack"
                                 component={AppointmentStack}
                                 options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
                             />
