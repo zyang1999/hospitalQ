@@ -19,6 +19,7 @@ import Reason from '../screens/Reason';
 import Feedback from '../screens/Feedback';
 import History from '../screens/History';
 import QueueDetails from '../screens/QueueDetails';
+import Appointment from '../screens/Appointment';
 import MakeAppointment from '../screens/MakeAppointment';
 import BookAppointment from '../screens/BookAppointment';
 import { TouchableOpacity, Text } from 'react-native';
@@ -77,7 +78,6 @@ export default function Navigation(props) {
                 <Text style={{ color: '#0288D1' }}>Logout</Text>
             </TouchableOpacity>
         );
-
     }
 
     const HistoryStack = () => {
@@ -93,6 +93,7 @@ export default function Navigation(props) {
     const AppointmentStack = () => {
         return (
             <Stack.Navigator>
+                <Stack.Screen name='Appointment' component={Appointment} />
                 <Stack.Screen name='MakeAppointment' component={MakeAppointment} />
                 <Stack.Screen name='BookAppointment' component={BookAppointment} />
             </Stack.Navigator>

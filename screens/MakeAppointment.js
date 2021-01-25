@@ -11,18 +11,24 @@ export default function MakeAppointment({navigation}) {
     const [doctorId, setDoctor] = useState('All');
     const [specialties, setSpecialties] = useState({});
     const [doctors, setDoctors] = useState({});
-    
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
+        let mounted = true
         api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
             setSpecialties(response.specialties);
         });
 
         api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
             setDoctors(response.doctors);
-            setReady(true);
+            if (mounted) {
+                setReady(true)
+            }
         });
+
+        return function cleanup() {
+            mounted = false
+        }
 
     }, [ready])
 
