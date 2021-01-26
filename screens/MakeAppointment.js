@@ -6,31 +6,30 @@ import { PrimaryButton, SecondaryButton } from '../components/Button';
 
 import api from '../services/Api';
 
-export default function MakeAppointment({navigation}) {
+export default function MakeAppointment({ navigation }) {
     const [specialtyId, setSpecialty] = useState('All');
     const [doctorId, setDoctor] = useState('All');
-    const [specialties, setSpecialties] = useState({});
-    const [doctors, setDoctors] = useState({});
+    const [specialties, setSpecialties] = useState([]);
+    const [doctors, setDoctors] = useState([]);
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        let mounted = true
+
         api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
             setSpecialties(response.specialties);
+
         });
 
         api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
             setDoctors(response.doctors);
-            if (mounted) {
-                setReady(true)
-            }
+            setReady(true);
         });
 
-        return function cleanup() {
-            mounted = false
-        }
+    }, [doctorId, specialtyId])
 
-    }, [ready])
+    const selectItem = () => {
+        setDoctorId(doctors[0]);
+    }
 
     const DropDown = (props) => {
         return (
@@ -43,11 +42,20 @@ export default function MakeAppointment({navigation}) {
                         props.action(id);
                         setReady(false);
                     }}>
-                    {props.filter == 'All' && <Picker.Item label="All" value="All" />}
+                    {props.filter == 'All' ? <Picker.Item label="All" value="All" /> : <Picker.Item label='Please select an option' value='All' />}
                     {props.dropdown}
                 </Picker>
             </View>
         );
+    }
+
+    const makeAppointment = () => {
+        console.log(doctorId);
+        if (doctorId === 'All' || specialtyId === 'All') {
+            alert('Please select a doctor before proceed to the next step.');
+        } else {
+            navigation.navigate('BookAppointment', { doctorId: doctorId });
+        }
     }
 
     if (ready) {
@@ -62,7 +70,7 @@ export default function MakeAppointment({navigation}) {
             <View style={globalStyles.container_2}>
                 <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} />
                 <DropDown header='Doctors' initialValue={doctorId} filter={specialtyId} action={setDoctor} array={doctors} dropdown={doctorDropDown} />
-                <PrimaryButton title='NEXT' action={()=>navigation.navigate('BookAppointment', {doctorId: doctorId})}/> 
+                <PrimaryButton title='NEXT' action={makeAppointment} />
             </View>
 
         );
@@ -73,8 +81,6 @@ export default function MakeAppointment({navigation}) {
             </View>
         );
     }
-
-
 }
 
 const styles = StyleSheet.create({
