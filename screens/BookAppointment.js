@@ -3,25 +3,28 @@ import { FlatList, View, ActivityIndicator, Text, StyleSheet, TouchableOpacity }
 import { Calendar } from 'react-native-calendars';
 import api from '../services/Api';
 import { globalStyles } from '../styles';
+import { Entypo } from '@expo/vector-icons';
 
-export default function BookAppointment({navigation}) {
+export default function BookAppointment({ navigation, route }) {
 
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(null);
     const [availableDate, setAvailableDate] = useState({});
     const [schedule, setSchedule] = useState([]);
     const [ready, setReady] = useState(false);
 
+    const doctorId = route.params.doctorId;
+
 
     useEffect(() => {
-        api.request('getAvailableDate', 'GET', {}).then(response => {
+        api.request('getAvailableDate', 'POST', { doctorId: doctorId }).then(response => {
             setAvailableDate(response.appointments);
             setReady(true);
         });
-    }, [ready])
+    }, [])
 
     const selectDate = (date) => {
         setDate(date.dateString);
-        api.request('getSchedule', 'POST', { date: date.dateString }).then(response => {
+        api.request('getSchedule', 'POST', { date: date.dateString, doctorId: doctorId }).then(response => {
             setSchedule(response.schedules);
         });
     }
@@ -29,16 +32,16 @@ export default function BookAppointment({navigation}) {
     const getMarkedDate = () => {
         const dateObject = {};
         availableDate.map(item => { dateObject[item] = { disabled: false }; });
-        dateObject[date] = { selected: true, selectedColor: 'blue' };
+        dateObject[date] = { selected: true, selectedColor: '#42A5F5' };
         return dateObject;
     }
 
     const bookAppointment = (appointmentId) => {
-        api.request('bookAppointment', 'POST', {appointmentId: appointmentId}).then(response =>{
-            if(response.success){
-                navigation.navigate('Appointment');
+        api.request('bookAppointment', 'POST', { appointmentId: appointmentId }).then(response => {
+            if (response.success) {
                 alert('Appointment is booked successfully');
-            }     
+                navigation.navigate('Appointment', {appointmentId: appointmentId});              
+            }
         })
     }
 
@@ -53,7 +56,12 @@ export default function BookAppointment({navigation}) {
     const renderItem = ({ item }) => (
         <View style={styles.scheduleContainer}>
             <View>
-                <Text style={globalStyles.h4}>{item.duration}</Text>
+                <Text style={globalStyles.h4}>{item.start_at + ' - ' + item.end_at}</Text>
+                <View style={{flexDirection:'row', alignItems: 'center'}}>
+                    <Entypo name="location-pin" size={24} color="black" />
+                    <Text>{item.location}</Text>
+                </View>
+
             </View>
             <View>
                 {item.status == 'AVAILABLE'
@@ -61,13 +69,13 @@ export default function BookAppointment({navigation}) {
                         style={styles.bookButton}
                         onPress={() => bookAppointment(item.id)}
                     >
-                        <Text style={styles.text}>Book</Text>
+                        <Text style={styles.text}>BOOK</Text>
                     </TouchableOpacity>
                     : <TouchableOpacity
                         disabled
                         style={styles.bookedButton}
                     >
-                        <Text style={styles.text}>Booked</Text>
+                        <Text style={styles.text}>BOOKED</Text>
                     </TouchableOpacity>
                 }
             </View>
@@ -91,7 +99,7 @@ export default function BookAppointment({navigation}) {
     } else {
         return (
             <View style={[globalStyles.container_2, { justifyContent: 'center' }]}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#42A5F5" />
             </View>
         );
     }

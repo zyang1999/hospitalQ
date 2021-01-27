@@ -14,22 +14,14 @@ export default function MakeAppointment({ navigation }) {
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
-
         api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
             setSpecialties(response.specialties);
-
         });
-
         api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
             setDoctors(response.doctors);
             setReady(true);
         });
-
-    }, [doctorId, specialtyId])
-
-    const selectItem = () => {
-        setDoctorId(doctors[0]);
-    }
+    }, [specialtyId, doctorId])
 
     const DropDown = (props) => {
         return (
@@ -42,7 +34,8 @@ export default function MakeAppointment({ navigation }) {
                         props.action(id);
                         setReady(false);
                     }}>
-                    {props.filter == 'All' ? <Picker.Item label="All" value="All" /> : <Picker.Item label='Please select an option' value='All' />}
+                    <Picker.Item label='All' value='All' />
+                    {/* {props.filter == 'All' ? <Picker.Item label="All" value="All" /> : <Picker.Item label='Please select an option' value='All' />} */}
                     {props.dropdown}
                 </Picker>
             </View>
@@ -50,9 +43,14 @@ export default function MakeAppointment({ navigation }) {
     }
 
     const makeAppointment = () => {
-        console.log(doctorId);
-        if (doctorId === 'All' || specialtyId === 'All') {
+        if (doctorId === 'All' && specialtyId === 'All') {
+            alert('Please select a doctor and specialty before proceed to the next step.');
+            return;
+        }
+        if (doctorId === 'All') {
             alert('Please select a doctor before proceed to the next step.');
+        } else if (specialtyId === 'All') {
+            alert('Please select a specialty before proceed to the next step.');
         } else {
             navigation.navigate('BookAppointment', { doctorId: doctorId });
         }
@@ -68,8 +66,8 @@ export default function MakeAppointment({ navigation }) {
         });
         return (
             <View style={globalStyles.container_2}>
-                <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} />
-                <DropDown header='Doctors' initialValue={doctorId} filter={specialtyId} action={setDoctor} array={doctors} dropdown={doctorDropDown} />
+                <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} type='specialty' />
+                <DropDown header='Doctors' initialValue={doctorId} filter={specialtyId} action={setDoctor} dropdown={doctorDropDown} />
                 <PrimaryButton title='NEXT' action={makeAppointment} />
             </View>
 
