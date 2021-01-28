@@ -1,37 +1,64 @@
 import React, { useState } from 'react';
-import { Text, View, FlatList, Modal, StyleSheet, TextInput } from 'react-native';
+import { Text, View, FlatList, Modal, StyleSheet, Image } from 'react-native';
 import { globalStyles } from '../styles';
 import { PrimaryButton, SecondaryButton } from '../components/Button';
 import Api from '../services/Api';
-import AppLoading from 'expo-app-loading';
+import Loading from '../components/Loading';
+import CountDown from 'react-native-countdown-component';
 
 
 export default function Queue({ navigation, route }) {
     const [ready, setReady] = useState(false);
+    const [user, setUser] = useState(null);
     const [userQueue, setUserQueue] = useState(null);
     const [allQueue, setAllQueue] = useState(null);
-    const [patientWaiting, setPatientWaiting] = useState(null);
+    const [profileImage, setProfileImage] = useState(null);
+    const [timeRange, setTimeRange] = useState(null);
 
     React.useEffect(() => {
         Api.request('getUserQueue', 'GET', {}).then(response => {
+            setUser(response.user);
             setUserQueue(response.userQueue);
-            setAllQueue(response.allQueue);
-            setPatientWaiting(response.patientWaiting);
-            setReady(true);
+            setProfileImage(response.profileImage);
+            if (response.userQueue) {
+                Api.request('getAverageWaitingTime', 'POST', {specialty: userQueue.location}).then(response => {
+                    setTimeRange(response.timeRange);
+                    Api.request('getAllQueue', 'GET', {}).then(response => {
+                        console.log(response);
+                        setAllQueue(response.allQueue);
+                        setReady(true);
+                    });                 
+                });
+            } else {
+                setReady(true);
+            }
         });
-    }, [ready]);
+    }, [route.params?.queueId]);
 
-    React.useEffect(() => {
-        setReady(false);
-    }, [route.params?.refresh]);
+    const Profile = () => (
+        <View style={styles.profileContainer}>
+            <View style={{ flex: 3 }}>
+                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: 'data:image/png;base64,' + profileImage }} />
+            </View>
+            <View style={{ flex: 7 }}>
+                <Text>Welcome Back,</Text>
+                <Text style={[globalStyles.h4]}>{user.first_name + ' ' + user.last_name}</Text>
+            </View>
+        </View>
+    )
 
     const renderItem = ({ item }) =>
     (
         <View style={globalStyles.queueStatus}>
-            <Text style={globalStyles.queueNumber}>{item.queue_no}</Text>
-            {item.status == 'SERVING'
-                ? <Text style={globalStyles.serving}>{item.status}</Text>
-                : <Text style={globalStyles.waiting}>{item.status}</Text>}
+            <View style={{ flex: 1 }}>
+                <Text style={globalStyles.queueNumber}>{item.queue_no}</Text>
+            </View>
+
+            <View style={{ flex: 1 }} >
+                {item.status == 'SERVING'
+                    ? <Text style={globalStyles.serving}>{item.status}</Text>
+                    : <Text style={globalStyles.waiting}>{item.status}</Text>}
+            </View>
         </View>
     );
     const QueueList = () => (
@@ -43,6 +70,7 @@ export default function Queue({ navigation, route }) {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
                 <View>
+                    <Profile />
                     <Queue />
                     <Text style={[globalStyles.h3, { textAlign: 'center', marginVertical: 20 }]}>Queue List</Text>
                     <View style={globalStyles.queueStatus}>
@@ -57,15 +85,10 @@ export default function Queue({ navigation, route }) {
     const NoQueue = () => {
         return (
             <View style={globalStyles.container_2}>
+                <Profile />
                 <View style={[globalStyles.UserQueueBox, { flex: 0.6 }]}>
                     <Text style={globalStyles.h4}>You haven't join a Queue Yet</Text>
-                    <PrimaryButton title='JOIN QUEUE' action={() => navigation.navigate('JoinQueue')} />
-                </View>
-                <View style={[globalStyles.UserQueueBox, { flex: 0.3 }]}>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={globalStyles.h5}>Number of Patient Wating</Text>
-                        <Text style={globalStyles.h2}>{patientWaiting}</Text>
-                    </View>
+                    <PrimaryButton title='JOIN QUEUE' action={() => navigation.navigate('JoinQueue', { setReady: (value) => setReady(value) })} />
                 </View>
             </View>
         );
@@ -80,12 +103,12 @@ export default function Queue({ navigation, route }) {
                     <Text style={globalStyles.h5}>Location</Text>
                     <Text style={[globalStyles.h4, { fontFamily: 'RobotoBold' }]}>{userQueue.location}</Text>
                     <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
-                        <Text style={globalStyles.h5}>10 </Text>
+                        <Text style={globalStyles.h5}>{allQueue.length} </Text>
                         <Text style={globalStyles.h5}>Patients in Waiting</Text>
                     </View>
                     <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
-                        <Text style={globalStyles.h5}>15 mins </Text>
-                        <Text style={globalStyles.h5}>Extimated Watiting Time</Text>
+                        <Text>{timeRange}</Text>
+                        <Text style={globalStyles.h5}>Extimated Served At</Text>
                     </View>
 
                     {userQueue.location == 'CONSULTATION' && <SecondaryButton title='CANCEL QUEUE' action={() => navigation.navigate('Reason', { queueId: userQueue.id })} />}
@@ -114,31 +137,26 @@ export default function Queue({ navigation, route }) {
             return (<NoQueue />);
         }
     } else {
-        return (<AppLoading />);
+        return (<Loading />);
     }
 }
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center'
-    },
-    modal: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
+    profileContainer: {
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 200
+            height: 1,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5
-    },
-    reason: {
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 10,
+        marginTop: 10,
+        flex: 0.15,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     }
 });

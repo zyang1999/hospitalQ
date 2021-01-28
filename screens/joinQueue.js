@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { globalStyles } from '../styles';
+import { baseUrl} from '../services/baseUrl';
 import Api from '../services/Api';
 
 export default function joinQueue({ navigation, route }) {
@@ -20,10 +21,12 @@ export default function joinQueue({ navigation, route }) {
     let json;
     setScanned(true);
     json = JSON.parse(data);
-    if (json.server === '192.168.0.197') {
+    if (json.url === baseUrl) {
       try {
-        Api.request('joinQueue', 'POST', { location: json.location })
-          .then(navigation.navigate('Queue', { refresh: true }));
+        Api.request('joinQueue', 'POST', { specialty: json.specialty })
+          .then(response => {
+            route.params.setReady(false);
+            navigation.navigate('Queue', { queueId: response.queue.id })});
       } catch (e) {
         handleError();
       }

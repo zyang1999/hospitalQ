@@ -14,7 +14,6 @@ export default function BookAppointment({ navigation, route }) {
 
     const doctorId = route.params.doctorId;
 
-
     useEffect(() => {
         api.request('getAvailableDate', 'POST', { doctorId: doctorId }).then(response => {
             setAvailableDate(response.appointments);
@@ -103,7 +102,6 @@ export default function BookAppointment({ navigation, route }) {
             </View>
         );
     }
-
 }
 
 const styles = StyleSheet.create({
@@ -139,5 +137,4 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'RobotoBold'
     }
-
 });

@@ -116,7 +116,7 @@ export const globalStyles = StyleSheet.create({
   },
   queueStatus: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
   },
   queueTitle: {
     elevation: 3,
@@ -130,38 +130,34 @@ export const globalStyles = StyleSheet.create({
     marginVertical: 10,
     textTransform: 'uppercase',
     backgroundColor: 'white'
-
   },
   queueNumber: {
-    fontSize: 35,
+    fontSize: 20,
     padding: 10,
     borderRadius: 20,
     textAlign: 'center',
-    width: '48%',
     marginVertical: 5,
     textTransform: 'uppercase',
     backgroundColor: 'white',
-    elevation: 1
+    elevation: 1,
   },
   serving: {
     fontSize: 20,
     padding: 10,
     borderRadius: 20,
     textAlign: 'center',
-    width: '48%',
     marginVertical: 5,
     textTransform: 'uppercase',
-    backgroundColor: '#58D68D'
+    backgroundColor: '#58D68D',
   },
   waiting: {
     fontSize: 20,
     padding: 10,
     borderRadius: 20,
     textAlign: 'center',
-    width: '48%',
     marginVertical: 5,
     textTransform: 'uppercase',
-    backgroundColor: '#F4D03F'
+    backgroundColor: '#F4D03F',
   },
   container_2: {
     flex: 1,
