@@ -15,7 +15,9 @@ export default function MakeAppointment({ navigation }) {
 
     useEffect(() => {
         api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
+            console.log(response);
             setSpecialties(response.specialties);
+           
         });
         api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
             setDoctors(response.doctors);
@@ -35,7 +37,6 @@ export default function MakeAppointment({ navigation }) {
                         setReady(false);
                     }}>
                     <Picker.Item label='All' value='All' />
-                    {/* {props.filter == 'All' ? <Picker.Item label="All" value="All" /> : <Picker.Item label='Please select an option' value='All' />} */}
                     {props.dropdown}
                 </Picker>
             </View>
@@ -66,11 +67,10 @@ export default function MakeAppointment({ navigation }) {
         });
         return (
             <View style={globalStyles.container_2}>
-                <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} type='specialty' />
+                <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} />
                 <DropDown header='Doctors' initialValue={doctorId} filter={specialtyId} action={setDoctor} dropdown={doctorDropDown} />
                 <PrimaryButton title='NEXT' action={makeAppointment} />
             </View>
-
         );
     } else {
         return (

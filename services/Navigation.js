@@ -22,6 +22,8 @@ import QueueDetails from '../screens/QueueDetails';
 import Appointment from '../screens/Appointment';
 import MakeAppointment from '../screens/MakeAppointment';
 import BookAppointment from '../screens/BookAppointment';
+import ManageAppointment from '../screens/ManageAppointment';
+import AddAppointment from '../screens/AddAppointment';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -89,13 +91,22 @@ export default function Navigation(props) {
             </Stack.Navigator>
         );
     }
-    
+
     const AppointmentStack = () => {
         return (
             <Stack.Navigator>
                 <Stack.Screen name='Appointment' component={Appointment} />
                 <Stack.Screen name='MakeAppointment' component={MakeAppointment} />
                 <Stack.Screen name='BookAppointment' component={BookAppointment} />
+            </Stack.Navigator>
+        );
+    }
+
+    const ManageAppointmentStack = () => {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen name='ManageAppointment' component={ManageAppointment} />
+                <Stack.Screen name='AddAppointment' component={AddAppointment} />
             </Stack.Navigator>
         );
     }
@@ -174,6 +185,7 @@ export default function Navigation(props) {
                     return (
                         <Tab.Navigator>
                             <Tab.Screen name="Staff" component={Staff} />
+                            {props.userRole == 'DOCTOR' && <Tab.Screen name="ManageAppointmentStack" component={ManageAppointmentStack} />}
                             <Tab.Screen name="Setting" component={Setting} />
                         </Tab.Navigator>
                     );

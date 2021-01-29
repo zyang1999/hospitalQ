@@ -25,6 +25,7 @@ export default function joinQueue({ navigation, route }) {
       try {
         Api.request('joinQueue', 'POST', { specialty: json.specialty })
           .then(response => {
+            console.log(response);
             route.params.setReady(false);
             navigation.navigate('Queue', { queueId: response.queue.id })});
       } catch (e) {

@@ -101,7 +101,7 @@ export default function Queue({ navigation, route }) {
                     <Text style={globalStyles.h5}>Your Ticket Number</Text>
                     <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
                     <Text style={globalStyles.h5}>Location</Text>
-                    <Text style={[globalStyles.h4, { fontFamily: 'RobotoBold' }]}>{userQueue.location}</Text>
+                    <Text style={[globalStyles.h4, { fontFamily: 'RobotoBold' }]}>{userQueue.specialty}</Text>
                     <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
                         <Text style={globalStyles.h5}>{allQueue.length} </Text>
                         <Text style={globalStyles.h5}>Patients in Waiting</Text>
