@@ -24,6 +24,7 @@ import MakeAppointment from '../screens/MakeAppointment';
 import BookAppointment from '../screens/BookAppointment';
 import ManageAppointment from '../screens/ManageAppointment';
 import AddAppointment from '../screens/AddAppointment';
+import AppointmentDetails from '../screens/AppointmentDetails';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -107,6 +108,7 @@ export default function Navigation(props) {
             <Stack.Navigator>
                 <Stack.Screen name='ManageAppointment' component={ManageAppointment} />
                 <Stack.Screen name='AddAppointment' component={AddAppointment} />
+                <Stack.Screen name='AppointmentDetails' component={AppointmentDetails} />
             </Stack.Navigator>
         );
     }
