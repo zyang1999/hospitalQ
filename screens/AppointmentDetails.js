@@ -1,10 +1,183 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { globalStyles } from '../styles';
+import { DangerButton, PrimaryButton, SecondaryButton } from "../components/Button";
+import Modal from 'react-native-modal';
+import api from '../services/Api';
+import ErrorMessage from '../components/ErrorMessage';
 
-export default function AppointmentDetails(){
-    return(
-        <View>
+export default function AppointmentDetails({ navigation, route }) {
+
+    const appointment = route.params.appointmentDetails;
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [error, setError] = useState([]);
+
+    var reason = '';
+
+    const splittedDate = appointment.date.split('-');
+    const day = splittedDate[0];
+    const month = splittedDate[1];
+    const year = splittedDate[2];
+
+    const appointmentDate = new Date(year, month, day).getTime();
+
+    const checkDate = (date) => {
+        const today = new Date();
+
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0, 0);
+        
+        const splittedDate = date.split('-');
+        const day = splittedDate[0];
+        const month = splittedDate[1] - 1;
+        const year = splittedDate[2];
+
+        const appointmentDate = new Date(year, month, day);
+        if(appointmentDate.getTime() == today.getTime()){
+            return 'today';
+        }else if(appointmentDate.getTime() > today.getTime()){
+            return 'future';
+        }else{
+            return 'past';
+        }
+    }
+    
+
+    const removeAppointment = (reason) => {
+        setModalVisible(false);
+        api.request('deleteAppointment', 'POST', { id: appointment.id, reason: reason }).then(response => {
+            if (response.success) {
+                alert(response.message);
+                navigation.navigate('ManageAppointment', { appointmentId: 'deleted' });
+            } else {
+                setError(response.message);
+            }
+        });
+    }
+
+    const completeAppointment = () =>{
+        console.log('completed');
+    }
+
+    const RemoveModal = () => (
+        <Modal
+            animationIn={'bounce'}
+            animationInTiming={1000}
+            isVisible={isModalVisible}>
+
+            <View style={styles.removeModal}>
+                {appointment.status == 'AVAILABLE'
+                    ? <View>
+                        <Text style={styles.details}>Are you sure you want to remove this appointment?</Text>
+                    </View>
+                    : <View>
+                        <Text styles={globalStyles.h5}>There is a patient who already booked this appointment! Please provide your reason in order to remove this appointment.</Text>
+                        <TextInput
+                            multiline
+                            numberOfLines={4}
+                            style={styles.input}
+                            onChangeText={text => reason = text}
+                        />
+                        {error.reason && <ErrorMessage message={error.reason} />}
+                    </View>
+                }
+
+                <View style={styles.modalButton}>
+                    <DangerButton title='CANCEL' action={() => removeAppointment(reason)} />
+                    <SecondaryButton title='BACK' action={() => setModalVisible(false)} />
+                </View>
+            </View>
+        </Modal>
+    );
+
+    const RemoveButton = () => {
+        if (appointment.status == 'CANCELLED') {
+            return (
+                <Text style={{margin: 10}}>This appointment is cancelled.</Text>
+            );
+        } else {
+            if (checkDate(appointment.date) != 'past') {
+                return (
+                    <View style={styles.button}>
+                        {checkDate(appointment.date) == 'today' && <PrimaryButton title='COMPLETE' action={completeAppointment}/>}
+                        <DangerButton title='CANCEL' action={() => setModalVisible(true)} />
+                    </View>
+                );
+            } else {
+                return (
+                    <Text style={{margin: 10}}>This appointment can't be deleted because it was in the past.</Text>
+                );
+            }
+        }
+    }
+
+    return (
+        <View style={globalStyles.container_2}>
+            <RemoveModal />
+            <View style={styles.card}>
+                <Text style={styles.title}>Appointment Date</Text>
+                <Text style={styles.details}>{appointment.date}</Text>
+                <Text style={styles.title}>Appointment Time</Text>
+                <Text style={styles.details}>{appointment.start_at + ' - ' + appointment.end_at}</Text>
+                <Text style={styles.title}>Specialty</Text>
+                <Text style={styles.details}>{appointment.specialty}</Text>
+                {appointment.status != 'AVAILABLE' &&
+                    <View>
+                        <Text style={styles.title}>Patient</Text>
+                        <Text style={styles.details}>{appointment.patient.first_name + ' ' + appointment.patient.last_name}</Text>
+                    </View>
+                }
+                <Text style={styles.title}>Status</Text>
+                <Text style={styles.details}>{appointment.status}</Text>
+                {appointment.status == 'CANCELLED' &&
+                    <View>
+                        <Text style={styles.title}>Cancelled Reason</Text>
+                        <Text style={styles.details}>{appointment.reason.reason}</Text>
+                    </View>
+                }             
+                </View>         
+                <RemoveButton />
 
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    card: {
+        elevation: 3,
+        backgroundColor: 'white',
+        marginTop: 20,
+        borderRadius: 10,
+        padding: 20
+    },
+    title: {
+        fontFamily: 'RobotoBold',
+        marginBottom: 10,
+        fontSize: 15
+    },
+    details: {
+        fontSize: 20,
+        marginBottom: 10
+    },
+    button: {
+        flex: 1,
+        justifyContent: 'flex-end'
+    },
+    removeModal: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+    },
+    modalButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: 10,
+        marginVertical: 10,
+        textAlignVertical: "top",
+        padding: 10
+    }
+});

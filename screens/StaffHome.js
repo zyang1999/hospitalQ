@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { Text, View, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { globalStyles } from '../styles';
-import AppLoading from 'expo-app-loading';
+import Loading from '../components/Loading';
 import Api from '../services/Api';
 
 export default function StaffHome() {
@@ -11,6 +11,7 @@ export default function StaffHome() {
     const [allQueue, setAllQueue] = useState(null);
     const [waitingPatient, setWaitingPatient] = useState(false);
     const [currentQueueID, setCurrentQueueID] = useState(null);
+    const [appointmentToday, setAppointmentsToday] = useState(null);
 
     React.useLayoutEffect(() => {
         Api.request('getAllQueue', 'GET', {}).then((response) => {
@@ -46,7 +47,6 @@ export default function StaffHome() {
         } else {
             return (
                 <TouchableOpacity
-                    onPress={() => updateQueue()}
                     disabled={true}
                 >
                     <Text style={[globalStyles.primaryButton, { backgroundColor: '#B3B6B7' }]}>NO PATIENT WAITING</Text>
@@ -93,8 +93,7 @@ export default function StaffHome() {
                     keyExtractor={item => item.id.toString()}
                     showsVerticalScrollIndicator={false}
                     ListHeaderComponent={
-                        <View>
-
+                        <View style={{ padding: 10 }}>
                             <CurrentPatient />
 
                             <Text style={[globalStyles.h3, { textAlign: 'center', marginVertical: 20 }]}>Queue List</Text>
@@ -109,6 +108,6 @@ export default function StaffHome() {
             </View>
         );
     } else {
-        return (<AppLoading />);
+        return (<Loading />);
     }
 }

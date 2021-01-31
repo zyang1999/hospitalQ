@@ -42,7 +42,7 @@ export const globalStyles = StyleSheet.create({
     elevation: 2
   },
   dangerButton: {
-    backgroundColor: '#607D8B',
+    backgroundColor: '#E74C3C',
     padding: 10,
     borderRadius: 10,
     color: 'white',

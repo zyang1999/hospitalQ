@@ -42,7 +42,6 @@ export default function AddAppointment({ navigation, route }) {
                 alert(response.message);
                 navigation.navigate('ManageAppointment', { appointmentId: response.appointment.id })
             }
-            console.log(response);
             setSubmitLoading(false);
         })
     }

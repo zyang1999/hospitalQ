@@ -25,6 +25,7 @@ import BookAppointment from '../screens/BookAppointment';
 import ManageAppointment from '../screens/ManageAppointment';
 import AddAppointment from '../screens/AddAppointment';
 import AppointmentDetails from '../screens/AppointmentDetails';
+import DoctorAppointment from '../screens/DoctorAppointment';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -113,6 +114,13 @@ export default function Navigation(props) {
         );
     }
 
+    const DoctorAppointmentStack = () => (
+        <Stack.Navigator>
+            <Stack.Screen name='DoctorAppointment' component={DoctorAppointment} />
+            <Stack.Screen name='AppointmentDetails' component={AppointmentDetails} />
+        </Stack.Navigator>
+    )
+
     const Navigation = () => {
         if (props.userToken == null) {
             return (<Default />);
@@ -187,7 +195,25 @@ export default function Navigation(props) {
                     return (
                         <Tab.Navigator>
                             <Tab.Screen name="Staff" component={Staff} />
-                            {props.userRole == 'DOCTOR' && <Tab.Screen name="ManageAppointmentStack" component={ManageAppointmentStack} />}
+                            {props.userRole == 'DOCTOR' &&
+                                <Tab.Screen
+                                    name="DoctorAppointmentStack"
+                                    component={DoctorAppointmentStack}
+                                    options={{
+                                        tabBarIcon: () => <AntDesign name="calendar" size={24} color="black" />
+                                    }}
+                                />
+                            }
+                            {props.userRole == 'DOCTOR' &&
+                                <Tab.Screen
+                                    name="ManageAppointmentStack"
+                                    component={ManageAppointmentStack}
+                                    options={{
+                                        tabBarIcon: () => <AntDesign name="calendar" size={24} color="black" />
+                                    }}
+                                />
+                            }
+
                             <Tab.Screen name="Setting" component={Setting} />
                         </Tab.Navigator>
                     );
