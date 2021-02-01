@@ -65,7 +65,6 @@ export default function Authentication() {
             let userRole = response.user.role;
             let userStatus = response.user.status;
             _storeData(userToken, userRole);
-            console.log(userToken);
             dispatch({ type: 'SIGN_IN', token: userToken, role: userRole, status: userStatus })
           } else {
             return (response);

@@ -5,20 +5,23 @@ import { Appointment } from '../components/Appointment';
 import api from "../services/Api";
 import { globalStyles } from '../styles';
 
-export default function DoctorAppointment({navigation}) {
+export default function DoctorAppointment({navigation, route}) {
 
     const [appointments, setAppointments] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if(route.params?.appointmentId){
+            setLoading(true);
+        }
         api.request('getDoctorAppointmentsToday', 'GET', {}).then(response => {
             setAppointments(response.appointments);
             setLoading(false);
         });
-    }, []);
+    }, [route.params?.appointmentId]);
 
     const renderItem = ({item}) => (
-        <Appointment props={item} navigation={navigation}/>
+        <Appointment props={item} navigation={navigation} previousScreen='DoctorAppointment'/>
     );
 
     const AppointmentList = () => (

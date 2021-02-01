@@ -2,11 +2,11 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 
-export const Appointment = ({ props, navigation }) => {
+export const Appointment = ({ props, navigation, previousScreen }) => {
     return (
         <TouchableOpacity
             style={styles.agendaContainer}
-            onPress={() => navigation.navigate('AppointmentDetails', { appointmentDetails: props })}
+            onPress={() => navigation.navigate('AppointmentDetails', { appointmentDetails: props, previousScreen: previousScreen })}
         >
             <View style={styles.appointmentInfoContainer}>
                 <Text style={{ fontFamily: 'RobotoBold' }}>{props.start_at + ' - ' + props.end_at}</Text>

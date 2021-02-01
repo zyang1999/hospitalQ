@@ -20,6 +20,7 @@ export default function StaffHome() {
             setCurrentQueueID((response.currentQueue) ? response.currentQueue.id : null);
             setWaitingPatient((response.allQueue.find(queue => queue.status == "WAITING")) ? true : false);
             setReady(true);
+
         });
     }, [ready]);
 
@@ -27,12 +28,19 @@ export default function StaffHome() {
         Api.request('updateQueue', 'POST', { queue_id: currentQueueID }).then(setReady(false));
     }
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }) => {
         <View style={globalStyles.queueStatus}>
-            <Text style={globalStyles.queueNumber}>{item.queue_no}</Text>
-            <Text style={globalStyles.serving}>{item.status}</Text>
+            <View style={{ flex: 1 }}>
+                <Text style={globalStyles.queueNumber}>{item.queue_no}</Text>
+            </View>
+
+            <View style={{ flex: 1 }} >
+                {item.status == 'SERVING'
+                    ? <Text style={globalStyles.serving}>{item.status}</Text>
+                    : <Text style={globalStyles.waiting}>{item.status}</Text>}
+            </View>
         </View>
-    );
+    }
 
     const ServeButton = () => {
         if (waitingPatient) {
@@ -43,7 +51,6 @@ export default function StaffHome() {
                     <Text style={globalStyles.primaryButton}>START SERVING</Text>
                 </TouchableOpacity>
             );
-
         } else {
             return (
                 <TouchableOpacity
@@ -71,12 +78,11 @@ export default function StaffHome() {
                     >
                         <Text style={globalStyles.primaryButton}>NEXT PATIENT</Text>
                     </TouchableOpacity>
-
                 </View>
             );
         } else {
             return (
-                <View style={[globalStyles.UserQueueBox, { height: 500 }]}>
+                <View style={[globalStyles.UserQueueBox, { height: 200 }]}>
                     <Text style={globalStyles.h4}>No Patient are being served now</Text>
                     <ServeButton />
                 </View>
@@ -102,6 +108,11 @@ export default function StaffHome() {
                                 <Text style={globalStyles.queueTitle}>Ticket Number</Text>
                                 <Text style={globalStyles.queueTitle}>Now Serving</Text>
                             </View>
+                            {allQueue.length == 0 &&
+                                <View style={{alignItems: 'center', marginVertical: 10}}>
+                                    <Text>No Patient is waiting</Text>
+                                </View>
+                            }
                         </View>
                     }
                 />

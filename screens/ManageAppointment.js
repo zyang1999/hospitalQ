@@ -6,10 +6,10 @@ import Loading from '../components/Loading';
 import api from '../services/Api';
 import { Appointment } from "../components/Appointment";
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Entypo } from '@expo/vector-icons';
 
 export default function ManageAppointment({ navigation, route }) {
     const currentDate = new Date().getTime();
+    
     const [allAppointments, setAllAppointments] = useState(null);
     const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false);
@@ -48,13 +48,14 @@ export default function ManageAppointment({ navigation, route }) {
             <Appointment
                 props={item}    
                 navigation={navigation}
+                previousScreen='ManageAppointment'
             />
         );
     }
 
     const loadItems = (day, allAppointments) => {
         setTimeout(() => {
-            for (let i = 0; i < 85; i++) {
+            for (let i = -15; i < 85; i++) {
                 const time = day + i * 24 * 60 * 60 * 1000;
                 const strTime = timeToString(time);
                 if (!allAppointments[strTime]) {
@@ -66,6 +67,7 @@ export default function ManageAppointment({ navigation, route }) {
                 newItems[key] = allAppointments[key];
             });
             setAllAppointments(newItems);
+            console.log(allAppointments);
             setLoading(false);
             setRefresh(false);
         }, 1000);
@@ -75,7 +77,7 @@ export default function ManageAppointment({ navigation, route }) {
         return (
             <View style={globalStyles.container_2}>
                 <Agenda
-                    selected={'2021-01-31'}
+                    selected={currentDate}
                     loadItemsForMonth={() => loadItems(currentDate, allAppointments)}
                     markedDates={getMarkedDate()}
                     pastScrollRange={50}

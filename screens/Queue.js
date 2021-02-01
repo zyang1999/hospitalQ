@@ -1,44 +1,43 @@
 import React, { useState } from 'react';
-import { Text, View, FlatList, Modal, StyleSheet, Image } from 'react-native';
+import { Text, View, FlatList, StyleSheet, Image, TextInput } from 'react-native';
 import { globalStyles } from '../styles';
-import { PrimaryButton, SecondaryButton } from '../components/Button';
+import { PrimaryButton, DangerButton, SecondaryButton } from '../components/Button';
+import ErrorMessage from '../components/ErrorMessage';
+import Modal from 'react-native-modal';
 import Api from '../services/Api';
 import Loading from '../components/Loading';
-import CountDown from 'react-native-countdown-component';
-
 
 export default function Queue({ navigation, route }) {
     const [ready, setReady] = useState(false);
     const [user, setUser] = useState(null);
     const [userQueue, setUserQueue] = useState(null);
     const [allQueue, setAllQueue] = useState(null);
-    const [profileImage, setProfileImage] = useState(null);
     const [timeRange, setTimeRange] = useState(null);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [error, setError] = useState([]);
 
     React.useEffect(() => {
         Api.request('getUserQueue', 'GET', {}).then(response => {
             setUser(response.user);
             setUserQueue(response.userQueue);
-            setProfileImage(response.profileImage);
             if (response.userQueue) {
-                Api.request('getAverageWaitingTime', 'POST', {specialty: userQueue.location}).then(response => {
+                Api.request('getAverageWaitingTime', 'POST', { specialty: response.userQueue.location }).then(response => {
                     setTimeRange(response.timeRange);
                     Api.request('getAllQueue', 'GET', {}).then(response => {
-                        console.log(response);
                         setAllQueue(response.allQueue);
                         setReady(true);
-                    });                 
+                    });
                 });
             } else {
                 setReady(true);
             }
         });
-    }, [route.params?.queueId]);
+    }, [route.params?.queueId, ready]);
 
     const Profile = () => (
         <View style={styles.profileContainer}>
             <View style={{ flex: 3 }}>
-                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: 'data:image/png;base64,' + profileImage }} />
+                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: user.selfie_string }} />
             </View>
             <View style={{ flex: 7 }}>
                 <Text>Welcome Back,</Text>
@@ -53,7 +52,6 @@ export default function Queue({ navigation, route }) {
             <View style={{ flex: 1 }}>
                 <Text style={globalStyles.queueNumber}>{item.queue_no}</Text>
             </View>
-
             <View style={{ flex: 1 }} >
                 {item.status == 'SERVING'
                     ? <Text style={globalStyles.serving}>{item.status}</Text>
@@ -61,6 +59,49 @@ export default function Queue({ navigation, route }) {
             </View>
         </View>
     );
+
+    const CancelModal = () => {
+        var reason = '';
+        return (
+            <Modal
+                isVisible={isModalVisible}
+            >
+                <View style={styles.modalContainer}>
+                    <View>
+                        <Text styles={globalStyles.h5}>Please provide your reason to cancel the queue.</Text>
+                        <TextInput
+                            multiline
+                            numberOfLines={4}
+                            style={styles.input}
+                            onChangeText={text => reason = text}
+                        />
+                        {error.reason && <ErrorMessage message={error.reason} />}
+                    </View>
+                    <View style={{ flexDirection: 'row'}}>
+                        <View style={{ flex: 1 , marginRight: 10}}>
+                            <DangerButton title='CANCEL' action={() => cancelQueue(reason)} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <SecondaryButton title='BACK' action={() => setModalVisible(false)} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        );
+    }
+
+    const cancelQueue = (reason) => {
+        Api.request('cancelQueue', 'POST', { queueId: userQueue.id, reason: reason }).then(response => {
+            if (response.success) {
+                setModalVisible(false);
+                alert(response.message);
+                setReady(false);
+            } else {
+                setError(response.message);
+            }
+        })
+    }
+
     const QueueList = () => (
         <FlatList
             style={globalStyles.container_2}
@@ -70,6 +111,7 @@ export default function Queue({ navigation, route }) {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
                 <View>
+                    <CancelModal />
                     <Profile />
                     <Queue />
                     <Text style={[globalStyles.h3, { textAlign: 'center', marginVertical: 20 }]}>Queue List</Text>
@@ -77,6 +119,11 @@ export default function Queue({ navigation, route }) {
                         <Text style={globalStyles.queueTitle}>Ticket Number</Text>
                         <Text style={globalStyles.queueTitle}>Now Serving</Text>
                     </View>
+                    {allQueue.length == 0 &&
+                        <View style={{ alignItems: 'center', marginVertical: 20 }}>
+                            <Text>No patient is waiting</Text>
+                        </View>
+                    }
                 </View>
             }
         />
@@ -97,21 +144,16 @@ export default function Queue({ navigation, route }) {
     const Queue = () => {
         if (userQueue.status == 'WAITING') {
             return (
-                <View style={[globalStyles.UserQueueBox, { height: 500 }]}>
-                    <Text style={globalStyles.h5}>Your Ticket Number</Text>
+                <View style={[globalStyles.UserQueueBox]}>
+                    <Text style={styles.title}>Your Ticket Number</Text>
                     <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
-                    <Text style={globalStyles.h5}>Location</Text>
+                    <Text style={styles.title}>Location</Text>
                     <Text style={[globalStyles.h4, { fontFamily: 'RobotoBold' }]}>{userQueue.specialty}</Text>
-                    <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
-                        <Text style={globalStyles.h5}>{allQueue.length} </Text>
-                        <Text style={globalStyles.h5}>Patients in Waiting</Text>
-                    </View>
-                    <View style={{ flexDirection: 'column', alignItems: 'center', margin: 10 }}>
-                        <Text>{timeRange}</Text>
-                        <Text style={globalStyles.h5}>Extimated Served At</Text>
-                    </View>
-
-                    {userQueue.location == 'CONSULTATION' && <SecondaryButton title='CANCEL QUEUE' action={() => navigation.navigate('Reason', { queueId: userQueue.id })} />}
+                    <Text style={styles.details}>{allQueue.length} </Text>
+                    <Text style={styles.title}>Patients in Waiting</Text>
+                    <Text style={styles.details}>{timeRange}</Text>
+                    <Text style={styles.title}>Extimated Served At</Text>
+                    {userQueue.specialty != 'PHARMACY' && <DangerButton title='CANCEL QUEUE' action={() => setModalVisible(true)} />}
                 </View>
             );
         } else {
@@ -143,20 +185,32 @@ export default function Queue({ navigation, route }) {
 
 const styles = StyleSheet.create({
     profileContainer: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
-        elevation: 3,
+        elevation: 4,
         backgroundColor: 'white',
-        borderRadius: 10,
+        marginHorizontal: 5,
         padding: 10,
-        marginTop: 10,
-        flex: 0.15,
         flexDirection: 'row',
-        alignItems: 'center'
+        marginTop: 10,
+        borderRadius: 10
+    },
+    title: {
+        fontFamily: 'RobotoBold',
+        marginTop: 10
+    },
+    details: {
+        marginTop: 10,
+        fontSize: 15
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: 10,
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: 10,
+        marginVertical: 10,
+        textAlignVertical: 'top',
+        padding: 10
     }
 });

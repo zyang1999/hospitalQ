@@ -103,11 +103,13 @@ export const globalStyles = StyleSheet.create({
   },
   UserQueueBox: {
     backgroundColor: 'white',
-    elevation: 3,
+    elevation: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 20,
-    marginTop: 20
+    borderRadius: 10,
+    marginTop: 20,
+    marginHorizontal: 5,
+    padding: 10
   },
   queueInfo: {
     marginVertical: 10,
