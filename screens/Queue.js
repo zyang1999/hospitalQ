@@ -42,11 +42,11 @@ export default function Queue({ navigation, route }) {
     const Profile = () => (
         <View style={styles.profileContainer}>
             <View style={{ flex: 3 }}>
-                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: patient.selfie_string }} />
+                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: user.selfie_string }} />
             </View>
             <View style={{ flex: 7 }}>
                 <Text>Welcome Back,</Text>
-                <Text style={[globalStyles.h4]}>{patient.first_name + ' ' + patient.last_name}</Text>
+                <Text style={[globalStyles.h4]}>{user.first_name + ' ' + user.last_name}</Text>
             </View>
         </View>
     )
