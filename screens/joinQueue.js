@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { globalStyles } from '../styles';
-import { baseUrl} from '../services/baseUrl';
+import { baseUrl } from '../services/baseUrl';
 import Api from '../services/Api';
 
 export default function joinQueue({ navigation, route }) {
@@ -26,8 +26,8 @@ export default function joinQueue({ navigation, route }) {
         Api.request('joinQueue', 'POST', { specialty: json.specialty })
           .then(response => {
             console.log(response);
-            route.params.setReady(false);
-            navigation.navigate('Queue', { queueId: response.queue.id })});
+            navigation.navigate('Queue', { queueId: response.queue.id })
+          });
       } catch (e) {
         handleError();
       }

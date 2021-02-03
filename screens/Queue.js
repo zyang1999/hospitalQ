@@ -11,12 +11,17 @@ export default function Queue({ navigation, route }) {
     const [ready, setReady] = useState(false);
     const [user, setUser] = useState(null);
     const [userQueue, setUserQueue] = useState(null);
-    const [allQueue, setAllQueue] = useState(null);
+    const [allQueue, setAllQueue] = useState([]);
     const [timeRange, setTimeRange] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [error, setError] = useState([]);
-
+    const [queueId, setQueueId] = useState(null);
+ 
     React.useEffect(() => {
+        if(queueId){
+            setReady(false);
+        }
+
         Api.request('getUserQueue', 'GET', {}).then(response => {
             setUser(response.user);
             setUserQueue(response.userQueue);
@@ -32,16 +37,16 @@ export default function Queue({ navigation, route }) {
                 setReady(true);
             }
         });
-    }, [route.params?.queueId, ready]);
+    }, [route.params?.queueId, queueId]);
 
     const Profile = () => (
         <View style={styles.profileContainer}>
             <View style={{ flex: 3 }}>
-                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: user.selfie_string }} />
+                <Image style={{ width: 70, height: 70, borderRadius: 100 }} source={{ uri: patient.selfie_string }} />
             </View>
             <View style={{ flex: 7 }}>
                 <Text>Welcome Back,</Text>
-                <Text style={[globalStyles.h4]}>{user.first_name + ' ' + user.last_name}</Text>
+                <Text style={[globalStyles.h4]}>{patient.first_name + ' ' + patient.last_name}</Text>
             </View>
         </View>
     )
@@ -91,11 +96,11 @@ export default function Queue({ navigation, route }) {
     }
 
     const cancelQueue = (reason) => {
-        Api.request('cancelQueue', 'POST', { queueId: userQueue.id, reason: reason }).then(response => {
+        Api.request('cancelQueue', 'POST', { queueId: userQueue.id, feedback: reason }).then(response => {
             if (response.success) {
                 setModalVisible(false);
                 alert(response.message);
-                setReady(false);
+                setQueueId(response.queue.id);
             } else {
                 setError(response.message);
             }
@@ -135,7 +140,7 @@ export default function Queue({ navigation, route }) {
                 <Profile />
                 <View style={[globalStyles.UserQueueBox, { flex: 0.6 }]}>
                     <Text style={globalStyles.h4}>You haven't join a Queue Yet</Text>
-                    <PrimaryButton title='JOIN QUEUE' action={() => navigation.navigate('JoinQueue', { setReady: (value) => setReady(value) })} />
+                    <PrimaryButton title='JOIN QUEUE' action={() => navigation.navigate('JoinQueue')} />
                 </View>
             </View>
         );

@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { PrimaryButton } from '../components/Button';
 import { globalStyles } from '../styles';
 
 export default function QueueDetails({ navigation, route }) {
 
     const details = route.params.details;
+    const doctor = details.doctor;
 
     const Feedback = () => {
         if (details.reason) {
@@ -22,7 +23,7 @@ export default function QueueDetails({ navigation, route }) {
                         <Text style={globalStyles.h5}>No FeedBack</Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                        <PrimaryButton title='Submit Feedback' action={()=>navigation.navigate('Feedback', {queueId: details.id})} />
+                        <PrimaryButton title='Submit Feedback' action={() => navigation.navigate('Feedback', { queueId: details.id })} />
                     </View>
 
                 </View>
@@ -32,19 +33,72 @@ export default function QueueDetails({ navigation, route }) {
     }
 
     return (
-        <View style={globalStyles.container_2}>
-            <View style={styles.detailContainer}>
-                <Text style={globalStyles.h5}>{details.created_at}</Text>
-                <Text style={globalStyles.h4}>Queue Number: {details.queue_no}</Text>
-                <Text style={globalStyles.h4}>Location: {details.location}</Text>
-                <Text style={globalStyles.h4}>Served by: {details.served_by.first_name + details.served_by.last_name}</Text>
-                <Text style={globalStyles.h4}>Waiting Time: {details.waiting_time}</Text>
+        <ScrollView style={styles.scrollViewContainer}>
+            <View style={{ marginHorizontal: 5 }}>
+                <View style={styles.card}>
+                    {doctor &&
+                        <View>
+                            <Image style={styles.image} source={{ uri: doctor.selfie_string }} />
+                        </View>
+                    }
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <View>
+                                <Text style={styles.title}>Queue Date</Text>
+                                <Text style={styles.details}>{details.created_at}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.title}>Specialty</Text>
+                                <Text style={styles.details}>{details.specialty}</Text>
+                            </View>
+                            <View>
+                                <View>
+                                    <Text style={styles.title}>Doctor Name</Text>
+                                    <Text style={styles.details}>{doctor.first_name + ' ' + doctor.last_name}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.title}>Telephone No</Text>
+                                    <Text style={styles.details}>{doctor.telephone}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.title}>Status</Text>
+                                    <Text style={styles.details}>{details.status}</Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View>
+                            <View>
+                                <Text style={styles.title}>Queue Time</Text>
+                                <Text style={styles.details}>{details.start_at + ' - ' + details.end_at}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.title}>Specialty</Text>
+                                <Text style={styles.details}>{details.specialty}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.title}>Doctor email</Text>
+                                <Text style={styles.details}>{doctor.email}</Text>
+                            </View>
+                            <View>
+                                <View>
+                                    <Text style={styles.title}>Gender</Text>
+                                    <Text style={styles.details}>{doctor.gender}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                    <View>
+                        {details.status == 'CANCELLED' &&
+                            <View>
+                                <Text style={styles.title}>Cancelled Reason</Text>
+                                <Text style={styles.details}>{details.feedback.feedback}</Text>
+                            </View>
+                        }
+                    </View>
+                </View>
+                {/* <Button />  */}
             </View>
-            <View style={styles.feedbackContainer}>
-                <Text style={[globalStyles.h3, { textAlign: 'center' }]}>Feedback</Text>
-                <Feedback />
-            </View>
-        </View>
+        </ScrollView>
     );
 }
 
@@ -82,5 +136,32 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         margin: 10
+    },
+    card: {
+        elevation: 4,
+        backgroundColor: 'white',
+        marginVertical: 10,
+        borderRadius: 10,
+        padding: 20,
+    },
+    title: {
+        fontFamily: 'RobotoBold',
+        marginBottom: 10,
+        fontSize: 15
+    },
+    details: {
+        fontSize: 15,
+        marginBottom: 10
+    },
+    image: {
+        marginBottom: 10,
+        height: 100,
+        width: 100,
+        borderRadius: 100,
+        alignSelf: 'center'
+    },
+    scrollViewContainer: {
+        backgroundColor: 'white',
+        padding: 5
     }
 });

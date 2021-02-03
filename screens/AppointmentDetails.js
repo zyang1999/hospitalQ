@@ -35,11 +35,10 @@ export default function AppointmentDetails({ navigation, route }) {
             return 'past';
         }
     }
-    
 
     const removeAppointment = (reason) => {
         setModalVisible(false);
-        api.request('deleteAppointment', 'POST', { id: appointment.id, reason: reason }).then(response => {
+        api.request('deleteAppointment', 'POST', { id: appointment.id, feedback: reason }).then(response => {
             if (response.success) {
                 alert(response.message);
                 navigation.navigate('ManageAppointment', { appointmentId: 'deleted' });
