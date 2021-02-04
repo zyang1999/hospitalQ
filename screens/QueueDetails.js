@@ -1,105 +1,197 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import { PrimaryButton } from '../components/Button';
-import { globalStyles } from '../styles';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TextInput } from 'react-native';
+import { PrimaryButton, DangerButton } from '../components/Button';
+import Modal from 'react-native-modal';
+import api from '../services/Api';
+import ErrorMessage from '../components/ErrorMessage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from '../components/Loading';
 
 export default function QueueDetails({ navigation, route }) {
 
-    const details = route.params.details;
-    const doctor = details.doctor;
+    const [details, setDetails] = useState(null);
+    const [doctor, setDoctor] = useState(null);
+    const [patient, setPatient] = useState(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [error, SetError] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [userRole, setUserRole] = useState(null);
 
-    const Feedback = () => {
-        if (details.reason) {
-            return (
-                <View style={styles.feedbackMessageContainer}>
-                    <Text style={globalStyles.h5}>{details.reason.reason}</Text>
+
+    useEffect(() => {
+        const getUserRole = async () => {
+            let userRole = await AsyncStorage.getItem('userRole');
+            setUserRole(userRole);
+        }
+        api.request('getQueueDetails', 'POST', { queueId: route.params.queueId }).then(response => {
+            console.log(response);
+            setDetails(response);
+            setDoctor(response.doctor);
+            setPatient(response.patient);
+            getUserRole();
+            setLoading(false);
+        })
+
+    }, [])
+
+    const FeedbackModal = () => {
+        var feedback = '';
+        return (
+            <Modal
+                isVisible={isVisible}
+            >
+                <View style={styles.modalContainer}>
+                    <Text style={styles.details}>Please provide your feedback below.</Text>
+                    <TextInput
+                        multiline
+                        numberOfLines={4}
+                        style={styles.input}
+                        onChangeText={text => feedback = text}
+                    />
+                    {error.feedback && <ErrorMessage message={error.feedback} />}
+                    <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flex: 1, marginRight: 10 }}>
+                            <PrimaryButton title='SUBMIT' action={() => submitFeedback(feedback)} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <DangerButton title='CANCEL' action={() => setIsVisible(false)} />
+                        </View>
+                    </View>
                 </View>
+            </Modal>
+        );
+    }
 
+    const submitFeedback = (feedback) => {
+        api.request('storeFeedback', 'POST', { queueId: details.id, feedback: feedback }).then(response => {
+            if (response.success) {
+                setIsVisible(false);
+                alert('Feedback submitted successfully');
+                navigation.navigate('History', { refresh: details.id });
+            } else {
+                SetError(response.message);
+            }
+        })
+    }
+
+    const FeedbackButton = () => (
+        <View style={{ flex: 1 }}>
+            <PrimaryButton title='SUBMIT FEEDBACK' action={() => setIsVisible(true)} />
+        </View>
+    )
+    const Feedback = () => {
+        if (details.feedback != null) {
+            return (
+                <View style={styles.card}>
+                    <Text style={styles.title}>Feedback</Text>
+                    <Text style={styles.details}>{details.feedback.feedback}</Text>
+                </View>
             );
         } else {
             return (
-                <View style={styles.feedbackContainer}>
-                    <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={globalStyles.h5}>No FeedBack</Text>
+                <View>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Feedback</Text>
+                        <Text>No Feedback</Text>
                     </View>
-                    <View style={{ flex: 1 }}>
-                        <PrimaryButton title='Submit Feedback' action={() => navigation.navigate('Feedback', { queueId: details.id })} />
-                    </View>
-
+                    {userRole == 'PATIENT' && <FeedbackButton />}
                 </View>
-
             );
         }
     }
 
-    return (
-        <ScrollView style={styles.scrollViewContainer}>
-            <View style={{ marginHorizontal: 5 }}>
-                <View style={styles.card}>
-                    {doctor &&
-                        <View>
+    if (loading) {
+        return (<Loading />);
+    } else {
+
+        return (
+            <ScrollView style={styles.scrollViewContainer}>
+                <FeedbackModal />
+                <View style={{ marginHorizontal: 5 }}>
+                    <View style={styles.card}>
+                        {doctor &&
                             <Image style={styles.image} source={{ uri: doctor.selfie_string }} />
-                        </View>
-                    }
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View>
-                            <View>
-                                <Text style={styles.title}>Queue Date</Text>
-                                <Text style={styles.details}>{details.created_at}</Text>
-                            </View>
-                            <View>
-                                <Text style={styles.title}>Specialty</Text>
-                                <Text style={styles.details}>{details.specialty}</Text>
-                            </View>
+                        }
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View>
                                 <View>
-                                    <Text style={styles.title}>Doctor Name</Text>
-                                    <Text style={styles.details}>{doctor.first_name + ' ' + doctor.last_name}</Text>
+                                    <Text style={styles.title}>details Date</Text>
+                                    <Text style={styles.details}>{details.created_at}</Text>
                                 </View>
                                 <View>
-                                    <Text style={styles.title}>Telephone No</Text>
-                                    <Text style={styles.details}>{doctor.telephone}</Text>
+                                    <Text style={styles.title}>Doctor Name</Text>
+                                    <Text style={styles.details}>DR. {doctor.first_name + ' ' + doctor.last_name}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.title}>Doctor email</Text>
+                                    <Text style={styles.details}>{doctor.email}</Text>
                                 </View>
                                 <View>
                                     <Text style={styles.title}>Status</Text>
                                     <Text style={styles.details}>{details.status}</Text>
                                 </View>
                             </View>
-                        </View>
-                        <View>
-                            <View>
-                                <Text style={styles.title}>Queue Time</Text>
-                                <Text style={styles.details}>{details.start_at + ' - ' + details.end_at}</Text>
-                            </View>
-                            <View>
-                                <Text style={styles.title}>Specialty</Text>
-                                <Text style={styles.details}>{details.specialty}</Text>
-                            </View>
-                            <View>
-                                <Text style={styles.title}>Doctor email</Text>
-                                <Text style={styles.details}>{doctor.email}</Text>
-                            </View>
                             <View>
                                 <View>
-                                    <Text style={styles.title}>Gender</Text>
-                                    <Text style={styles.details}>{doctor.gender}</Text>
+                                    <Text style={styles.title}>details Time</Text>
+                                    <Text style={styles.details}>{details.start_at + ' - ' + details.end_at}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.title}>Specialty</Text>
+                                    <Text style={styles.details}>{details.specialty}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.title}>Telephone No</Text>
+                                    <Text style={styles.details}>{doctor.telephone}</Text>
                                 </View>
                             </View>
                         </View>
-                    </View>
-                    <View>
-                        {details.status == 'CANCELLED' &&
+                        {details.status != 'AVAILABLE' &&
                             <View>
-                                <Text style={styles.title}>Cancelled Reason</Text>
-                                <Text style={styles.details}>{details.feedback.feedback}</Text>
+                                <View style={{ borderBottomWidth: 0.5, marginBottom: 10 }} />
+                                <Image style={styles.image} source={{ uri: patient.selfie_string }} />
+                                <View style={{ flexDirection: 'row' }}>
+                                    <View style={{ marginRight: 35 }}>
+                                        <View>
+                                            <Text style={styles.title}>Patient Name</Text>
+                                            <Text style={styles.details}>{patient.first_name + ' ' + patient.last_name}</Text>
+                                        </View>
+                                        <View>
+                                            <Text style={styles.title}>Patient email</Text>
+                                            <Text style={styles.details}>{patient.email}</Text>
+                                        </View>
+                                        <View>
+                                            <Text style={styles.title}>Telephone No</Text>
+                                            <Text style={styles.details}>{patient.telephone}</Text>
+                                        </View>
+                                    </View>
+                                    <View>
+                                        <View>
+                                            <Text style={styles.title}>Gender</Text>
+                                            <Text style={styles.details}>{patient.gender}</Text>
+                                        </View>
+                                        <View>
+                                            <Text style={styles.title}>patient IC</Text>
+                                            <Text style={styles.details}>{patient.IC_no}</Text>
+                                        </View>
+                                    </View>
+                                </View>
                             </View>
                         }
+                        <View>
+                            {details.status == 'CANCELLED' &&
+                                <View>
+                                    <Text style={styles.title}>Cancelled Reason</Text>
+                                    <Text style={styles.details}>{details.feedback.feedback}</Text>
+                                </View>
+                            }
+                        </View>
                     </View>
+                    {details.status == 'COMPLETED' && <Feedback />}
                 </View>
-                {/* <Button />  */}
-            </View>
-        </ScrollView>
-    );
+            </ScrollView>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
@@ -163,5 +255,16 @@ const styles = StyleSheet.create({
     scrollViewContainer: {
         backgroundColor: 'white',
         padding: 5
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 10
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: 10,
+        textAlignVertical: 'top',
+        padding: 10
     }
 });

@@ -90,6 +90,7 @@ export default function Navigation(props) {
                 <Stack.Screen name='History' component={History} />
                 <Stack.Screen name="Feedback" component={Feedback} />
                 <Stack.Screen name="QueueDetails" component={QueueDetails} />
+                <Stack.Screen name="AppointmentDetails" component={AppointmentDetails} />
             </Stack.Navigator>
         );
     }
@@ -213,7 +214,11 @@ export default function Navigation(props) {
                                     }}
                                 />
                             }
-
+                            <Tab.Screen
+                                name="HistoryStack"
+                                component={HistoryStack}
+                                options={{ tabBarIcon: () => <FontAwesome name="history" size={24} color="black" /> }}
+                            />
                             <Tab.Screen name="Setting" component={Setting} />
                         </Tab.Navigator>
                     );

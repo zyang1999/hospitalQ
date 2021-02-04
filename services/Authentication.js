@@ -50,7 +50,6 @@ export default function Authentication() {
     try {
       await AsyncStorage.setItem('userToken', userToken);
       await AsyncStorage.setItem('userRole', userRole);
-      console.log()
     } catch (error) {
       console.log(error);
     }

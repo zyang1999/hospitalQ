@@ -7,6 +7,7 @@ import { PrimaryButton, SecondaryButton } from '../components/Button';
 import api from '../services/Api';
 
 export default function MakeAppointment({ navigation }) {
+    
     const [specialtyId, setSpecialty] = useState('All');
     const [doctorId, setDoctor] = useState('All');
     const [specialties, setSpecialties] = useState([]);
@@ -15,7 +16,6 @@ export default function MakeAppointment({ navigation }) {
 
     useEffect(() => {
         api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
-            console.log(response);
             setSpecialties(response.specialties);
            
         });

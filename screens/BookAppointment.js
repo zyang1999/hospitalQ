@@ -7,7 +7,7 @@ import { Entypo } from '@expo/vector-icons';
 
 export default function BookAppointment({ navigation, route }) {
 
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [availableDate, setAvailableDate] = useState({});
     const [schedule, setSchedule] = useState([]);
     const [ready, setReady] = useState(false);
@@ -16,6 +16,7 @@ export default function BookAppointment({ navigation, route }) {
 
     useEffect(() => {
         api.request('getAvailableDate', 'POST', { doctorId: doctorId }).then(response => {
+            console.log(response);
             setAvailableDate(response.appointments);
             setReady(true);
         });
@@ -24,6 +25,7 @@ export default function BookAppointment({ navigation, route }) {
     const selectDate = (date) => {
         setDate(date.dateString);
         api.request('getSchedule', 'POST', { date: date.dateString, doctorId: doctorId }).then(response => {
+            console.log(response);
             setSchedule(response.schedules);
         });
     }
@@ -32,6 +34,7 @@ export default function BookAppointment({ navigation, route }) {
         const dateObject = {};
         availableDate.map(item => { dateObject[item] = { disabled: false }; });
         dateObject[date] = { selected: true, selectedColor: '#42A5F5' };
+        console.log(dateObject);
         return dateObject;
     }
 

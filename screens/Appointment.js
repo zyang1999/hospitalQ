@@ -8,7 +8,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Appointment({ navigation, route }) {
 
-    const [appointment, setAppointment] = useState(null);
+    const [appointment, setAppointment] = useState([]);
     const [appointmentToday, setAppointmentToday] = useState(null);
     const [ready, setReady] = useState(false);
 
@@ -34,7 +34,6 @@ export default function Appointment({ navigation, route }) {
                 <Entypo name="location-pin" size={24} color="black" />
                 <Text style={{ fontSize: 15 }}>{props.location}</Text>
             </View>
-
         </View>
     )
 
@@ -43,9 +42,9 @@ export default function Appointment({ navigation, route }) {
             date={item.date}
             start_at={item.start_at}
             end_at={item.end_at}
-            first_name={item.user.first_name}
-            last_name={item.user.last_name}
-            specialty={item.user.specialty.specialty}
+            first_name={item.doctor.first_name}
+            last_name={item.doctor.last_name}
+            specialty={item.specialty}
             location={item.location}
         />
     )

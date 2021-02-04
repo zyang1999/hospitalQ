@@ -6,7 +6,7 @@ export const Appointment = ({ props, navigation, previousScreen }) => {
     return (
         <TouchableOpacity
             style={styles.agendaContainer}
-            onPress={() => navigation.navigate('AppointmentDetails', { appointmentDetails: props, previousScreen: previousScreen })}
+            onPress={() => navigation.navigate('AppointmentDetails', { appointmentId: props.id, previousScreen: previousScreen })}
         >
             <View style={styles.appointmentInfoContainer}>
                 <Text style={{ fontFamily: 'RobotoBold' }}>{props.start_at + ' - ' + props.end_at}</Text>
@@ -19,7 +19,7 @@ export const Appointment = ({ props, navigation, previousScreen }) => {
                 {props.status != 'AVAILABLE' &&
                     <View>
                         <Text>Booked By: </Text>
-                        <Text>{props.patient.first_name + ' ' + props.patient.last_name}</Text>
+                        <Text>{props.patient_full_name}</Text>
                     </View>
                 }
             </View>

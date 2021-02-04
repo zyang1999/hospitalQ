@@ -23,7 +23,9 @@ export default function StaffHome() {
     }, [ready]);
 
     const updateQueue = () => {
-        Api.request('updateQueue', 'POST', { queue_id: currentQueueID }).then(setReady(false));
+        Api.request('updateQueue', 'POST', { queue_id: currentQueueID }).then(response =>{
+            console.log(response);
+        });
     }
 
     const renderItem = ({ item }) => (
