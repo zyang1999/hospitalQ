@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -23,7 +23,10 @@ export default function SettingMenu({ navigation }) {
                         <Text style={style.title}>Account</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={style.setting}>
+                <TouchableOpacity
+                    style={style.setting}
+                    onPress={()=> navigation.navigate('Password')}
+                >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <MaterialCommunityIcons name="onepassword" size={25} color="black" style={{ marginRight: 10 }} />
                         <Text style={style.title}>Password</Text>

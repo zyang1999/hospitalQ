@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "553967457494",
+    "project_id": "hospitalq-a1ca8",
+    "storage_bucket": "hospitalq-a1ca8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553967457494:android:4c05020d3774fd238aa577",
+        "android_client_info": {
+          "package_name": "com.yang.hospitalQ"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553967457494-anu0c9vo1bpluj6kdv3a6gcdq71ku0m6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_2QKNxLXaziBSnZqecLSOi7a-1XkhKF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553967457494-anu0c9vo1bpluj6kdv3a6gcdq71ku0m6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

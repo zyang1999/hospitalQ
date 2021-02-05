@@ -11,7 +11,7 @@ export const globalStyles = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     borderColor: 'black',
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 20,
     marginVertical: 10,
   },
@@ -164,7 +164,7 @@ export const globalStyles = StyleSheet.create({
   container_2: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 15,
+    padding: 10,
   },
   image: {
     width: '100%',

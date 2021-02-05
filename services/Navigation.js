@@ -26,6 +26,8 @@ import ManageAppointment from '../screens/ManageAppointment';
 import AddAppointment from '../screens/AddAppointment';
 import AppointmentDetails from '../screens/AppointmentDetails';
 import DoctorAppointment from '../screens/DoctorAppointment';
+import Password from '../screens/Password';
+import Telephone from '../screens/Telephone';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
 
@@ -67,6 +69,8 @@ export default function Navigation(props) {
             <Stack.Navigator>
                 <Stack.Screen name="SettingMenu" component={SettingMenu} />
                 <Stack.Screen name="Account" component={Account} />
+                <Stack.Screen name="Password" component={Password} />
+                <Stack.Screen name="Telephone" component={Telephone} />
             </Stack.Navigator>
         );
     }
@@ -173,12 +177,14 @@ export default function Navigation(props) {
                             <Tab.Screen
                                 name="Patient"
                                 component={Patient}
-                                options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
+                                options={{ 
+                                    tabBarIcon: () => <AntDesign name="home" size={24} color="black" /> 
+                                }}
                             />
                             <Tab.Screen
                                 name="AppointmentStack"
                                 component={AppointmentStack}
-                                options={{ tabBarIcon: () => <MaterialIcons name="queue" size={24} color="black" /> }}
+                                options={{ tabBarIcon: () => <AntDesign name="calendar" size={24} color="black" /> }}
                             />
                             <Tab.Screen
                                 name="HistoryStack"
@@ -195,7 +201,16 @@ export default function Navigation(props) {
                 } else if (props.userRole == 'DOCTOR' || props.userRole == 'NURSE') {
                     return (
                         <Tab.Navigator>
-                            <Tab.Screen name="Staff" component={Staff} />
+                            <Tab.Screen
+                                name="Staff"
+                                component={Staff}
+                                options={{ 
+                                    tabBarIcon: () => <AntDesign name="home" size={24} color="black" /> ,
+                                    tabBarOptions:{
+                                        showLabel: false
+                                    }
+                                }}
+                            />
                             {props.userRole == 'DOCTOR' &&
                                 <Tab.Screen
                                     name="DoctorAppointmentStack"
@@ -210,8 +225,9 @@ export default function Navigation(props) {
                                     name="ManageAppointmentStack"
                                     component={ManageAppointmentStack}
                                     options={{
-                                        tabBarIcon: () => <AntDesign name="calendar" size={24} color="black" />
+                                        tabBarIcon: () => <FontAwesome name="tasks" size={24} color="black" />
                                     }}
+                                    
                                 />
                             }
                             <Tab.Screen
@@ -219,7 +235,11 @@ export default function Navigation(props) {
                                 component={HistoryStack}
                                 options={{ tabBarIcon: () => <FontAwesome name="history" size={24} color="black" /> }}
                             />
-                            <Tab.Screen name="Setting" component={Setting} />
+                            <Tab.Screen
+                                name="Setting"
+                                component={Setting}
+                                options={{ tabBarIcon: () => <AntDesign name="setting" size={24} color="black" /> }}
+                            />
                         </Tab.Navigator>
                     );
                 }

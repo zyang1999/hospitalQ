@@ -67,7 +67,6 @@ export default function ManageAppointment({ navigation, route }) {
                 newItems[key] = allAppointments[key];
             });
             setAllAppointments(newItems);
-            console.log(allAppointments);
             setLoading(false);
             setRefresh(false);
         }, 1000);
