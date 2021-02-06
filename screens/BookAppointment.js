@@ -4,6 +4,7 @@ import { Calendar } from 'react-native-calendars';
 import api from '../services/Api';
 import { globalStyles } from '../styles';
 import { Entypo } from '@expo/vector-icons';
+import Loading from '../components/Loading';
 
 export default function BookAppointment({ navigation, route }) {
 
@@ -11,22 +12,24 @@ export default function BookAppointment({ navigation, route }) {
     const [availableDate, setAvailableDate] = useState({});
     const [schedule, setSchedule] = useState([]);
     const [ready, setReady] = useState(false);
+    const [scheduleLoading, setSchdeuleLoading] = useState(false);
 
     const doctorId = route.params.doctorId;
+    const concern = route.params.concern;
 
     useEffect(() => {
         api.request('getAvailableDate', 'POST', { doctorId: doctorId }).then(response => {
-            console.log(response);
             setAvailableDate(response.appointments);
             setReady(true);
         });
     }, [])
 
     const selectDate = (date) => {
+        setSchdeuleLoading(true);
         setDate(date.dateString);
         api.request('getSchedule', 'POST', { date: date.dateString, doctorId: doctorId }).then(response => {
-            console.log(response);
             setSchedule(response.schedules);
+            setSchdeuleLoading(false);
         });
     }
 
@@ -39,10 +42,10 @@ export default function BookAppointment({ navigation, route }) {
     }
 
     const bookAppointment = (appointmentId) => {
-        api.request('bookAppointment', 'POST', { appointmentId: appointmentId }).then(response => {
+        api.request('bookAppointment', 'POST', { appointmentId: appointmentId, concern: concern }).then(response => {
             if (response.success) {
                 alert('Appointment is booked successfully');
-                navigation.navigate('Appointment', {appointmentId: appointmentId});              
+                navigation.navigate('Appointment', { appointmentId: appointmentId });
             }
         })
     }
@@ -55,34 +58,40 @@ export default function BookAppointment({ navigation, route }) {
         />
     )
 
-    const renderItem = ({ item }) => (
-        <View style={styles.scheduleContainer}>
-            <View>
-                <Text style={globalStyles.h4}>{item.start_at + ' - ' + item.end_at}</Text>
-                <View style={{flexDirection:'row', alignItems: 'center'}}>
-                    <Entypo name="location-pin" size={24} color="black" />
-                    <Text>{item.location}</Text>
-                </View>
+    const renderItem = ({ item }) => {
+        if (scheduleLoading) {
+            return (<Loading />);
+        } else {
+            return (
+                <View style={styles.scheduleContainer}>
+                    <View>
+                        <Text style={globalStyles.h4}>{item.start_at + ' - ' + item.end_at}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Entypo name="location-pin" size={24} color="black" />
+                            <Text>{item.location}</Text>
+                        </View>
 
-            </View>
-            <View>
-                {item.status == 'AVAILABLE'
-                    ? <TouchableOpacity
-                        style={styles.bookButton}
-                        onPress={() => bookAppointment(item.id)}
-                    >
-                        <Text style={styles.text}>BOOK</Text>
-                    </TouchableOpacity>
-                    : <TouchableOpacity
-                        disabled
-                        style={styles.bookedButton}
-                    >
-                        <Text style={styles.text}>BOOKED</Text>
-                    </TouchableOpacity>
-                }
-            </View>
-        </View>
-    )
+                    </View>
+                    <View>
+                        {item.status == 'AVAILABLE'
+                            ? <TouchableOpacity
+                                style={styles.bookButton}
+                                onPress={() => bookAppointment(item.id)}
+                            >
+                                <Text style={styles.text}>BOOK</Text>
+                            </TouchableOpacity>
+                            : <TouchableOpacity
+                                disabled
+                                style={styles.bookedButton}
+                            >
+                                <Text style={styles.text}>BOOKED</Text>
+                            </TouchableOpacity>
+                        }
+                    </View>
+                </View>
+            )
+        }
+    }
 
     if (ready) {
         return (

@@ -2,7 +2,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import SignIn from '../screens/SignIn';
@@ -15,8 +14,6 @@ import Account from '../screens/Account';
 import ICVerification from '../screens/ICverification';
 import Selfie from '../screens/Selfie';
 import PendingVerification from '../screens/PendingVerification';
-import Reason from '../screens/Reason';
-import Feedback from '../screens/Feedback';
 import History from '../screens/History';
 import QueueDetails from '../screens/QueueDetails';
 import Appointment from '../screens/Appointment';
@@ -51,7 +48,6 @@ export default function Navigation(props) {
             <Stack.Navigator>
                 <Stack.Screen name="Queue" component={Queue} />
                 <Stack.Screen name="JoinQueue" component={JoinQueue} />
-                <Stack.Screen name="Reason" component={Reason} />
             </Stack.Navigator>
         );
     }
@@ -92,7 +88,6 @@ export default function Navigation(props) {
         return (
             <Stack.Navigator>
                 <Stack.Screen name='History' component={History} />
-                <Stack.Screen name="Feedback" component={Feedback} />
                 <Stack.Screen name="QueueDetails" component={QueueDetails} />
                 <Stack.Screen name="AppointmentDetails" component={AppointmentDetails} />
             </Stack.Navigator>

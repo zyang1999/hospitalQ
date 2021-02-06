@@ -87,7 +87,6 @@ export default function Appointment({ navigation, route }) {
                 </View>
             );
         }
-
     }
 
     if (ready) {

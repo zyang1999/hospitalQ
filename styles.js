@@ -119,6 +119,7 @@ export const globalStyles = StyleSheet.create({
   queueStatus: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    marginBottom: 10
   },
   queueTitle: {
     elevation: 3,

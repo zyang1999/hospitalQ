@@ -1,49 +1,51 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Authentication from './services/Authentication';
 import messaging from '@react-native-firebase/messaging';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { Platform } from 'react-native';
 
 export default function App() {
-  async function saveTokenToDatabase(token) {
-    // Assume user is already signed in
-    const userId = auth().currentUser.uid;
-
-    // Add the token to the users datastore
-    await firestore()
-      .collection('users')
-      .doc(userId)
-      .update({
-        tokens: firestore.FieldValue.arrayUnion(token),
-      });
-  }
 
   useEffect(() => {
-    // Get the device token
+
+    async function requestUserPermission() {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        console.log('Authorization status:', authStatus);
+      }
+    }
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+    });
+
     messaging()
-      .getToken()
-      .then(token => {
-        return saveTokenToDatabase(token);
+      .getInitialNotification()
+      .then(remoteMessage => {
+        console.log(
+          'Notification caused app to open from background state:',
+          remoteMessage);
       });
 
-    // If using other push notification providers (ie Amazon SNS, etc)
-    // you may need to get the APNs token instead for iOS:
-    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
-
-    // Listen to whether the token changes
-    return messaging().onTokenRefresh(token => {
-      saveTokenToDatabase(token);
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
     });
+
+    messaging().onMessage(async remoteMessage => {
+      if (remoteMessage.notification != null) {
+        console.log(remoteMessage);
+      }else{
+        
+      }
+    });
+
+    requestUserPermission();
   }, []);
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    });
-
-    return unsubscribe;
-  }, [])
 
   return (<Authentication />);
 }

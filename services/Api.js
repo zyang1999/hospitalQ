@@ -19,6 +19,7 @@ class Api {
             }
             let response = await fetch(baseUrl + url, second_argument);
             let json = await response.json();
+            console.log(json);
             return json;
 
         } catch (error) {

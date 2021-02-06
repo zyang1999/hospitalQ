@@ -5,40 +5,88 @@ import { Picker } from '@react-native-picker/picker';
 import { PrimaryButton, SecondaryButton } from '../components/Button';
 
 import api from '../services/Api';
+import { TextInput } from 'react-native-gesture-handler';
+import Loading from '../components/Loading';
 
 export default function MakeAppointment({ navigation }) {
-    
+
     const [specialtyId, setSpecialty] = useState('All');
     const [doctorId, setDoctor] = useState('All');
     const [specialties, setSpecialties] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [ready, setReady] = useState(false);
-
+    const [concern, setConcern] = useState(null);
+    const [specialtiesRefresh, setSpecialtiesRefresh] = useState(false);
+    const [doctorsRefresh, setDoctorsRefresh] = useState(false);
     useEffect(() => {
         api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
             setSpecialties(response.specialties);
-           
+            api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
+                setDoctors(response.doctors);
+                setReady(true);
+            });
         });
+    }, [])
+
+    const getSpecialties = (doctorId) => {
+        setSpecialtiesRefresh(true);
+        api.request('getSpecialties', 'POST', { doctorId: doctorId }).then(response => {
+            setSpecialties(response.specialties);
+            setSpecialty(response.specialties[0].id);
+            setSpecialtiesRefresh(false);
+        });
+    }
+
+    const getDoctors = (specialtyId) => {
+        setDoctorsRefresh(true);
         api.request('getDoctorList', 'POST', { specialtyId: specialtyId }).then(response => {
             setDoctors(response.doctors);
-            setReady(true);
+            setDoctorsRefresh(false);
         });
-    }, [specialtyId, doctorId])
+    }
 
-    const DropDown = (props) => {
+    const SepcialtiesDropDown = () => {
         return (
             <View>
-                <Text style={globalStyles.h5}>{props.header}</Text>
-                <Picker
-                    selectedValue={props.initialValue}
-                    style={styles.picker}
-                    onValueChange={(id) => {
-                        props.action(id);
-                        setReady(false);
-                    }}>
-                    <Picker.Item label='All' value='All' />
-                    {props.dropdown}
-                </Picker>
+                <Text style={globalStyles.h5}>Specialties</Text>
+                {specialtiesRefresh
+                    ? <Loading />
+                    : <Picker
+                        selectedValue={specialtyId}
+                        style={styles.picker}
+                        onValueChange={(id) => {
+                            setSpecialty(id);
+                            getDoctors(id);
+                        }}>
+                        <Picker.Item label='All' value='All' />
+                        {specialties.map((item) => {
+                            return (<Picker.Item label={item.specialty} value={item.id} key={item.id} />);
+                        })}
+                    </Picker>
+                }
+            </View>
+        );
+    }
+
+    const DoctorsDropDown = () => {
+        return (
+            <View>
+                <Text style={globalStyles.h5}>Doctors</Text>
+                {doctorsRefresh
+                    ? <Loading />
+                    : <Picker
+                        selectedValue={doctorId}
+                        style={styles.picker}
+                        onValueChange={id => {
+                            setDoctor(id);
+                            getSpecialties(id);
+                        }}>
+                        <Picker.Item label='All' value='All' />
+                        {doctors.map((item) => {
+                            return (<Picker.Item label={'Dr. ' + item.first_name + item.last_name} value={item.id} key={item.id} />);
+                        })}
+                    </Picker>
+                }
             </View>
         );
     }
@@ -53,22 +101,22 @@ export default function MakeAppointment({ navigation }) {
         } else if (specialtyId === 'All') {
             alert('Please select a specialty before proceed to the next step.');
         } else {
-            navigation.navigate('BookAppointment', { doctorId: doctorId });
+            navigation.navigate('BookAppointment', { doctorId: doctorId, concern: concern });
         }
     }
 
     if (ready) {
-        const specialtyDropDown = specialties.map((item) => {
-            return (<Picker.Item label={item.specialty} value={item.id} key={item.id} />);
-        });
-
-        const doctorDropDown = doctors.map((item) => {
-            return (<Picker.Item label={'Dr. ' + item.first_name + item.last_name} value={item.id} key={item.id} />);
-        });
         return (
             <View style={globalStyles.container_2}>
-                <DropDown header='Specialties' initialValue={specialtyId} filter={doctorId} action={setSpecialty} dropdown={specialtyDropDown} />
-                <DropDown header='Doctors' initialValue={doctorId} filter={specialtyId} action={setDoctor} dropdown={doctorDropDown} />
+                <SepcialtiesDropDown />
+                <DoctorsDropDown />
+                <Text style={globalStyles.h5}>Concern (optional)</Text>
+                <TextInput
+                    style={styles.input}
+                    multiline
+                    numberOfLines={4}
+                    onChangeText={text => setConcern(text)}
+                />
                 <PrimaryButton title='NEXT' action={makeAppointment} />
             </View>
         );
@@ -82,7 +130,10 @@ export default function MakeAppointment({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    picker: {
-        // backgroundColor: ''
+    input: {
+        borderRadius: 10,
+        borderWidth: 1,
+        textAlignVertical: 'top',
+        padding: 10
     }
 });

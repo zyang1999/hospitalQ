@@ -5,6 +5,7 @@ import { AuthContext } from './Context';
 import Navigation from './Navigation';
 import AppLoading from 'expo-app-loading';
 import Api from './Api';
+import messaging from '@react-native-firebase/messaging';
 
 export default function Authentication() {
 
@@ -64,6 +65,13 @@ export default function Authentication() {
             let userRole = response.user.role;
             let userStatus = response.user.status;
             _storeData(userToken, userRole);
+
+            messaging().getToken().then(token => Api.request('saveFcmToken', 'POST', {token: token}));
+            
+            messaging().onTokenRefresh(token => {
+              Api.request('saveFcmToken', 'POST', { token: token });
+            });
+
             dispatch({ type: 'SIGN_IN', token: userToken, role: userRole, status: userStatus })
           } else {
             return (response);
@@ -133,7 +141,7 @@ export default function Authentication() {
       );
     }
   } else {
-    
+
     return <AppLoading />;
   }
 }

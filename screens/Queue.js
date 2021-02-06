@@ -6,38 +6,46 @@ import ErrorMessage from '../components/ErrorMessage';
 import Modal from 'react-native-modal';
 import Api from '../services/Api';
 import Loading from '../components/Loading';
+import messaging from '@react-native-firebase/messaging';
 
 export default function Queue({ navigation, route }) {
     const [ready, setReady] = useState(false);
-    const [user, setUser] = useState(null);
-    const [userQueue, setUserQueue] = useState(null);
+    const [userQueue, setUserQueue] = useState([]);
     const [allQueue, setAllQueue] = useState([]);
-    const [timeRange, setTimeRange] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [error, setError] = useState([]);
-    const [queueId, setQueueId] = useState(null);
- 
-    React.useEffect(() => {
-        if(queueId){
-            setReady(false);
-        }
+    const [user, setUser] = useState(null);
 
-        Api.request('getUserQueue', 'GET', {}).then(response => {
+    React.useEffect(() => {
+
+        const getQueue = () => Api.request('getUserQueue', 'GET', {}).then(response => {
             setUser(response.user);
             setUserQueue(response.userQueue);
             if (response.userQueue) {
-                Api.request('getAverageWaitingTime', 'POST', { specialty: response.userQueue.location }).then(response => {
-                    setTimeRange(response.timeRange);
-                    Api.request('getAllQueue', 'GET', {}).then(response => {
-                        setAllQueue(response.allQueue);
-                        setReady(true);
-                    });
+                Api.request('getAllQueue', 'GET', {}).then(response => {
+                    setAllQueue(response.allQueue);
+                    setReady(true);
                 });
             } else {
                 setReady(true);
             }
         });
-    }, [route.params?.queueId, queueId]);
+
+        messaging().onMessage(async remoteMessage => {
+            if (remoteMessage.data.type == 'refreshQueue') {
+                setReady(false);
+            }
+        });
+
+        messaging().setBackgroundMessageHandler(async remoteMessage => {
+            if (remoteMessage.data.type == 'refreshQueue') {
+                setReady(false);
+            }
+        });
+
+        getQueue();
+
+    }, [route.params?.queueId, ready]);
 
     const Profile = () => (
         <View style={styles.profileContainer}>
@@ -82,8 +90,8 @@ export default function Queue({ navigation, route }) {
                         />
                         {error.reason && <ErrorMessage message={error.reason} />}
                     </View>
-                    <View style={{ flexDirection: 'row'}}>
-                        <View style={{ flex: 1 , marginRight: 10}}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flex: 1, marginRight: 10 }}>
                             <DangerButton title='CANCEL' action={() => cancelQueue(reason)} />
                         </View>
                         <View style={{ flex: 1 }}>
@@ -100,7 +108,7 @@ export default function Queue({ navigation, route }) {
             if (response.success) {
                 setModalVisible(false);
                 alert(response.message);
-                setQueueId(response.queue.id);
+                setReady(false);
             } else {
                 setError(response.message);
             }
@@ -154,9 +162,9 @@ export default function Queue({ navigation, route }) {
                     <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
                     <Text style={styles.title}>Location</Text>
                     <Text style={[globalStyles.h4, { fontFamily: 'RobotoBold' }]}>{userQueue.specialty}</Text>
-                    <Text style={styles.details}>{allQueue.length} </Text>
+                    <Text style={styles.details}>{userQueue.number_of_patients} </Text>
                     <Text style={styles.title}>Patients in Waiting</Text>
-                    <Text style={styles.details}>{timeRange}</Text>
+                    <Text style={styles.details}>{userQueue.time_range}</Text>
                     <Text style={styles.title}>Extimated Served At</Text>
                     {userQueue.specialty != 'PHARMACY' && <DangerButton title='CANCEL QUEUE' action={() => setModalVisible(true)} />}
                 </View>
@@ -167,9 +175,9 @@ export default function Queue({ navigation, route }) {
                     <Text style={globalStyles.h3}>It's Your Turn!</Text>
                     <Text style={globalStyles.h5}>Your Ticket Number</Text>
                     <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
-                    {userQueue.location == 'CONSULTATION'
-                        ? <Text style={globalStyles.h5}>Room No</Text>
-                        : <Text style={globalStyles.h5}>Counter No</Text>
+                    {userQueue.specialty == 'Pharmacy'
+                        ? <Text style={globalStyles.h5}>Counter No</Text>
+                        : <Text style={globalStyles.h5}>Room No</Text>
                     }
                     <Text style={globalStyles.h1}>{userQueue.served_at}</Text>
                 </View>

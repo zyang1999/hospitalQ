@@ -3,6 +3,7 @@ import { Text, View, TouchableOpacity, FlatList, StyleSheet } from 'react-native
 import { globalStyles } from '../styles';
 import Loading from '../components/Loading';
 import Api from '../services/Api';
+import messaging from '@react-native-firebase/messaging';
 
 export default function StaffHome() {
 
@@ -13,17 +14,35 @@ export default function StaffHome() {
     const [currentQueueID, setCurrentQueueID] = useState(null);
 
     React.useEffect(() => {
-        Api.request('getAllQueue', 'GET', {}).then((response) => {
+        const getAllQueue = () => Api.request('getAllQueue', 'GET', {}).then((response) => {
             setAllQueue(response.allQueue);
             setCurrentQueue(response.currentQueue);
             setCurrentQueueID((response.currentQueue) ? response.currentQueue.id : null);
-            setWaitingPatient((response.allQueue.find(queue => queue.status == "WAITING")) ? true : false);
             setReady(true);
         });
+
+        getAllQueue();
+
+        messaging().onMessage(async remoteMessage => {
+            if (remoteMessage.data.type == 'refreshQueue') {
+                Api.request('getAllQueue', 'GET', {}).then((response) => {
+                    setAllQueue(response.allQueue);
+                });
+            }
+        });
+
+        messaging().setBackgroundMessageHandler(async remoteMessage => {
+            if (remoteMessage.data.type == 'refreshQueue') {
+                Api.request('getAllQueue', 'GET', {}).then((response) => {
+                    setReady(false);
+                });
+            }
+        });
+
     }, [ready]);
 
     const updateQueue = () => {
-        Api.request('updateQueue', 'POST', { queue_id: currentQueueID }).then(response =>{
+        Api.request('updateQueue', 'POST', { queue_id: currentQueueID }).then(response => {
             console.log(response);
         });
     }
@@ -43,7 +62,7 @@ export default function StaffHome() {
     )
 
     const ServeButton = () => {
-        if (waitingPatient) {
+        if (allQueue.length != 0) {
             return (
                 <TouchableOpacity
                     onPress={() => updateQueue()}
