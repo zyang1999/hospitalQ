@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.yang.hospitalQ",
+      "package": "com.yang.hospitalq",
       "googleServicesFile": "./google-services.json",
       "versionCode": 1
     },

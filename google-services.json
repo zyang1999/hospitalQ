@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:553967457494:android:4c05020d3774fd238aa577",
+        "mobilesdk_app_id": "1:553967457494:android:0fd9e54dfe53820c8aa577",
         "android_client_info": {
-          "package_name": "com.yang.hospitalQ"
+          "package_name": "com.yang.hospitalq"
         }
       },
       "oauth_client": [
