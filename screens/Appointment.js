@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import api from '../services/Api';
 import { globalStyles } from '../styles';
+import Loading from '../components/Loading';
+import * as AppointmentItem from '../components/Appointment';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -21,36 +22,42 @@ export default function Appointment({ navigation, route }) {
         });
     }, [route.params?.appointmentId]);
 
-    const AppointmentItem = (props) => (
-        <View style={styles.appointmentContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                <MaterialIcons name="date-range" size={24} color="black" />
-                <Text style={{ fontSize: 15 }}>{props.date}</Text>
+    const AppointmentItem = ({ item }) => (
+        <TouchableOpacity
+            style={styles.agendaContainer}
+            onPress={() => navigation.navigate('AppointmentDetails', { appointmentId: item.id, previousScreen: 'Appointment' })}
+        >
+            <View style={styles.appointmentInfoContainer}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                    <MaterialIcons name="date-range" size={24} color="black" />
+                    <Text style={{ fontSize: 15 }}>{item.date_string}</Text>
+                </View>
+                <Text style={{ fontFamily: 'RobotoBold' }}>{item.start_at + ' - ' + item.end_at}</Text>
+                <Text>{item.specialty}</Text>
+                <View style={{ flexDirection: 'row', alignpropss: 'center' }}>
+                    <Entypo name="location-pin" size={24} color="black" />
+                    <Text>{item.location}</Text>
+                </View>
+
+                {item.status != 'AVAILABLE' &&
+                    <View>
+                        <Text>Booked By: </Text>
+                        <Text>{item.patient_full_name}</Text>
+                    </View>
+                }
             </View>
-            <Text style={{ fontSize: 20, fontFamily: 'RobotoBold', marginBottom: 5 }}>{props.start_at + ' - ' + props.end_at}</Text>
-            <Text style={{ fontSize: 15, marginBottom: 5 }}>DR. {props.first_name + ' ' + props.last_name}</Text>
-            <Text style={{ fontSize: 15, marginBottom: 5 }}>{props.specialty}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Entypo name="location-pin" size={24} color="black" />
-                <Text style={{ fontSize: 15 }}>{props.location}</Text>
+            <View style={styles.statusContainer}>
+                <Text>{item.status}</Text>
             </View>
-        </View>
-    )
+        </TouchableOpacity>
+    );
 
     const renderItem = ({ item }) => (
-        <AppointmentItem
-            date={item.date}
-            start_at={item.start_at}
-            end_at={item.end_at}
-            first_name={item.doctor.first_name}
-            last_name={item.doctor.last_name}
-            specialty={item.specialty}
-            location={item.location}
-        />
-    )
+        <AppointmentItem item={item} />
+    );
 
     const AppointmentList = () => {
-        if (appointment) {
+        if (appointment.length != 0) {
             return (
                 <FlatList
                     data={appointment}
@@ -60,7 +67,7 @@ export default function Appointment({ navigation, route }) {
             );
         } else {
             return (
-                <View style={styles.appointmentContainer}>
+                <View style={[styles.appointmentContainer, { alignItems: 'center', justifyContent: 'center', flex: 0.5 }]}>
                     <Text>No Appointment</Text>
                 </View>
             );
@@ -68,21 +75,13 @@ export default function Appointment({ navigation, route }) {
     }
 
     const AppointmentToday = () => {
-        if (appointmentToday) {
+        if (appointmentToday != null) {
             return (
-                <AppointmentItem
-                    date={appointmentToday.date}
-                    start_at={appointmentToday.start_at}
-                    end_at={appointmentToday.end_at}
-                    first_name={appointmentToday.user.first_name}
-                    last_name={appointmentToday.user.last_name}
-                    specialty={appointmentToday.user.specialty.specialty}
-                    location={appointmentToday.location}
-                />
+                <AppointmentItem item={appointmentToday} />
             );
         } else {
             return (
-                <View style={[styles.appointmentContainer, { flex:1, alignItems: 'center', justifyContent: 'center' }]}>
+                <View style={[styles.appointmentContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
                     <Text>No Appointment Today</Text>
                 </View>
             );
@@ -112,7 +111,7 @@ export default function Appointment({ navigation, route }) {
             </View>
         );
     } else {
-        return (<View></View>);
+        return (<Loading />);
     }
 
 
@@ -172,5 +171,25 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 30,
         fontFamily: 'RobotoBold'
-    }
+    },
+    statusContainer: {
+        padding: 10,
+        borderRadius: 10,
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#FFE082'
+    },
+    appointmentInfoContainer: {
+        flex: 2
+    },
+    agendaContainer: {
+        backgroundColor: 'white',
+        margin: 5,
+        borderRadius: 10,
+        padding: 10,
+        elevation: 3,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
 });

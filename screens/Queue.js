@@ -47,6 +47,26 @@ export default function Queue({ navigation, route }) {
 
     }, [route.params?.queueId, ready]);
 
+    const Doctor = () => {
+        const doctor = userQueue.doctor;
+        return (
+            <View style={styles.card}>
+                <Text style={{ fontFamily: 'RobotoBold', textAlign: 'center' }}>Your Doctor</Text>
+                <Image style={{ width: 70, height: 70, borderRadius: 100, alignSelf: 'center', marginTop: 10 }} source={{ uri: doctor.selfie_string }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                    <View>
+                        <Text style={styles.title}>Name</Text>
+                        <Text style={styles.details}>DR. {doctor.full_name}</Text>
+                    </View>
+                    <View>
+                        <Text style={styles.title}>Specialty</Text>
+                        <Text style={styles.details}>{userQueue.specialty}</Text>
+                    </View>
+                </View>
+            </View>
+        );
+    }
+
     const Profile = () => (
         <View style={styles.profileContainer}>
             <View style={{ flex: 3 }}>
@@ -88,7 +108,7 @@ export default function Queue({ navigation, route }) {
                             style={styles.input}
                             onChangeText={text => reason = text}
                         />
-                        {error.reason && <ErrorMessage message={error.reason} />}
+                        {error.feedback && <ErrorMessage message={error.feedback} />}
                     </View>
                     <View style={{ flexDirection: 'row' }}>
                         <View style={{ flex: 1, marginRight: 10 }}>
@@ -126,7 +146,14 @@ export default function Queue({ navigation, route }) {
                 <View>
                     <CancelModal />
                     <Profile />
-                    <Queue />
+                    {userQueue.specialty != 'Phamarcy'
+                        ? <View>
+                            <Queue />
+                            <Doctor />
+                        </View>
+                        : <PhamarcyQueue />
+                    }
+
                     <Text style={[globalStyles.h3, { textAlign: 'center', marginVertical: 20 }]}>Queue List</Text>
                     <View style={globalStyles.queueStatus}>
                         <Text style={globalStyles.queueTitle}>Ticket Number</Text>
@@ -155,34 +182,78 @@ export default function Queue({ navigation, route }) {
     }
 
     const Queue = () => {
-        if (userQueue.status == 'WAITING') {
-            return (
-                <View style={[globalStyles.UserQueueBox]}>
-                    <Text style={styles.title}>Your Ticket Number</Text>
-                    <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
-                    <Text style={styles.title}>Location</Text>
-                    <Text style={[globalStyles.h4, { fontFamily: 'RobotoBold' }]}>{userQueue.specialty}</Text>
-                    <Text style={styles.details}>{userQueue.number_of_patients} </Text>
-                    <Text style={styles.title}>Patients in Waiting</Text>
-                    <Text style={styles.details}>{userQueue.time_range}</Text>
-                    <Text style={styles.title}>Extimated Served At</Text>
-                    {userQueue.specialty != 'PHARMACY' && <DangerButton title='CANCEL QUEUE' action={() => setModalVisible(true)} />}
+        return (
+            <View style={[globalStyles.UserQueueBox]}>
+                {userQueue.status == 'SERVING' && <Text style={globalStyles.h2}>It's Your Turn!</Text>}
+                <Text style={styles.title}>Your Ticket Number</Text>
+                <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.title}>Room No</Text>
+                    <Text style={globalStyles.h2}>{userQueue.location}</Text>
                 </View>
-            );
-        } else {
-            return (
-                <View style={[globalStyles.UserQueueBox, { height: 400 }]}>
-                    <Text style={globalStyles.h3}>It's Your Turn!</Text>
-                    <Text style={globalStyles.h5}>Your Ticket Number</Text>
-                    <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
-                    {userQueue.specialty == 'Pharmacy'
-                        ? <Text style={globalStyles.h5}>Counter No</Text>
-                        : <Text style={globalStyles.h5}>Room No</Text>
-                    }
-                    <Text style={globalStyles.h1}>{userQueue.served_at}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ marginRight: 20 }}>
+                        <View>
+                            <Text style={styles.title}>Specialty</Text>
+                            <Text style={styles.details}>{userQueue.specialty}</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.title}>Patients in Waiting</Text>
+                            <Text style={styles.details}>{userQueue.number_of_patients} </Text>
+                        </View>
+                    </View>
+                    <View>
+                        <View>
+                            <Text style={styles.title}>Concern</Text>
+                            {userQueue.concern != null
+                                ? <Text style={styles.details}>{userQueue.concern}</Text>
+                                : <Text>None</Text>
+                            }
+                        </View>
+                        <View>
+                            <Text style={styles.title}>Extimated Served At</Text>
+                            <Text style={styles.details}>{userQueue.time_range}</Text>
+                        </View>
+                    </View>
                 </View>
-            );
-        }
+                {userQueue.status == 'WAITING' &&
+                    <View style={{ marginTop: 20 }}>
+                        <DangerButton title='CANCEL QUEUE' action={() => setModalVisible(true)} />
+                    </View>
+                }
+            </View>
+        );
+    }
+
+    const PhamarcyQueue = () => {
+        return (
+            <View style={[globalStyles.UserQueueBox]}>
+                {userQueue.status == 'SERVING' && <Text style={globalStyles.h2}>It's Your Turn!</Text>}
+                <Text style={styles.title}>Your Ticket Number</Text>
+                <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
+
+                {userQueue.status == 'SERVING' &&
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.title}>Counter No</Text>
+                        <Text style={globalStyles.h2}>{userQueue.location}</Text>
+                    </View>
+                }
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ marginRight: 20 }}>
+                        <View>
+                            <Text style={styles.title}>Patients in Waiting</Text>
+                            <Text style={styles.details}>{userQueue.number_of_patients} </Text>
+                        </View>
+                    </View>
+                    <View>
+                        <View>
+                            <Text style={styles.title}>Extimated Served At</Text>
+                            <Text style={styles.details}>{userQueue.time_range}</Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        );
     }
 
     if (ready) {
@@ -225,5 +296,13 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         textAlignVertical: 'top',
         padding: 10
+    },
+    card: {
+        backgroundColor: 'white',
+        elevation: 5,
+        padding: 10,
+        borderRadius: 10,
+        margin: 5,
+        marginTop: 10
     }
 });

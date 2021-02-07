@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AntDesign } from '@expo/vector-icons';
@@ -27,12 +27,45 @@ import Password from '../screens/Password';
 import Telephone from '../screens/Telephone';
 import { TouchableOpacity, Text } from 'react-native';
 import { AuthContext } from './Context';
-
+import messaging from '@react-native-firebase/messaging';
+import * as RootNavigation from "./RootNavigation";
 
 export default function Navigation(props) {
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
+    const [initialRoute, setInitialRoute] = useState(() => {
+        if (props.userRole == 'PATIENT') {
+            return 'Patient';
+        } else {
+            return 'Staff';
+        }
+    });
+
+    useEffect(() => {
+        async function requestUserPermission() {
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+            if (enabled) {
+                console.log('Authorization status:', authStatus);
+            }
+        }
+
+        messaging().onNotificationOpenedApp(remoteMessage => {
+            RootNavigation.navigate(remoteMessage.data.route);
+        });
+
+        messaging().setBackgroundMessageHandler(async remoteMessage => {
+            if (remoteMessage.data.route != null) {
+                setInitialRoute(remoteMessage.data.route);
+            }
+        });
+
+        requestUserPermission();
+    }, []);
 
     const Default = () => {
         return (
@@ -100,6 +133,7 @@ export default function Navigation(props) {
                 <Stack.Screen name='Appointment' component={Appointment} />
                 <Stack.Screen name='MakeAppointment' component={MakeAppointment} />
                 <Stack.Screen name='BookAppointment' component={BookAppointment} />
+                <Stack.Screen name="AppointmentDetails" component={AppointmentDetails} />
             </Stack.Navigator>
         );
     }
@@ -164,16 +198,15 @@ export default function Navigation(props) {
                     </Stack.Navigator>
                 );
             }
-
             else {
                 if (props.userRole == 'PATIENT') {
                     return (
-                        <Tab.Navigator>
+                        <Tab.Navigator initialRouteName={initialRoute}>
                             <Tab.Screen
                                 name="Patient"
                                 component={Patient}
-                                options={{ 
-                                    tabBarIcon: () => <AntDesign name="home" size={24} color="black" /> 
+                                options={{
+                                    tabBarIcon: () => <AntDesign name="home" size={24} color="black" />
                                 }}
                             />
                             <Tab.Screen
@@ -199,9 +232,9 @@ export default function Navigation(props) {
                             <Tab.Screen
                                 name="Staff"
                                 component={Staff}
-                                options={{ 
-                                    tabBarIcon: () => <AntDesign name="home" size={24} color="black" /> ,
-                                    tabBarOptions:{
+                                options={{
+                                    tabBarIcon: () => <AntDesign name="home" size={24} color="black" />,
+                                    tabBarOptions: {
                                         showLabel: false
                                     }
                                 }}
@@ -222,7 +255,7 @@ export default function Navigation(props) {
                                     options={{
                                         tabBarIcon: () => <FontAwesome name="tasks" size={24} color="black" />
                                     }}
-                                    
+
                                 />
                             }
                             <Tab.Screen
@@ -243,7 +276,7 @@ export default function Navigation(props) {
     }
 
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={RootNavigation.navigationRef}>
             <Navigation />
         </NavigationContainer>
     );

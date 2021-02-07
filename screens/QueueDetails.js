@@ -100,6 +100,18 @@ export default function QueueDetails({ navigation, route }) {
         }
     }
 
+    const Reason = () => {
+        return (
+            <View style={{ marginVertical: 10 }}>
+                <View style={styles.card}>
+                    <Text style={styles.title}>Cancel Reason</Text>
+                    <Text style={styles.details}>{details.feedback.feedback}</Text>
+                </View>
+                <Text>This queue is cancelled by the patient.</Text>
+            </View>
+        );
+    }
+
     if (loading) {
         return (<Loading />);
     } else {
@@ -115,15 +127,25 @@ export default function QueueDetails({ navigation, route }) {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View>
                                 <View>
-                                    <Text style={styles.title}>details Date</Text>
+                                    <Text style={styles.title}>Date</Text>
                                     <Text style={styles.details}>{details.created_at}</Text>
                                 </View>
+                                {doctor.role == 'DOCTOR'
+                                    ? <View>
+                                        <Text style={styles.title}>Doctor Name</Text>
+                                        <Text style={styles.details}>DR. {doctor.first_name + ' ' + doctor.last_name}</Text>
+                                    </View>
+                                    : <View>
+                                        <Text style={styles.title}>Nurse Name</Text>
+                                        <Text style={styles.details}>{doctor.first_name + ' ' + doctor.last_name}</Text>
+                                    </View>
+                                }
                                 <View>
-                                    <Text style={styles.title}>Doctor Name</Text>
-                                    <Text style={styles.details}>DR. {doctor.first_name + ' ' + doctor.last_name}</Text>
+                                    <Text style={styles.title}>Telephone No</Text>
+                                    <Text style={styles.details}>{doctor.telephone}</Text>
                                 </View>
                                 <View>
-                                    <Text style={styles.title}>Doctor email</Text>
+                                    <Text style={styles.title}>Email</Text>
                                     <Text style={styles.details}>{doctor.email}</Text>
                                 </View>
                                 <View>
@@ -133,16 +155,12 @@ export default function QueueDetails({ navigation, route }) {
                             </View>
                             <View>
                                 <View>
-                                    <Text style={styles.title}>details Time</Text>
-                                    <Text style={styles.details}>{details.start_at + ' - ' + details.end_at}</Text>
+                                    <Text style={styles.title}>Start At </Text>
+                                    <Text style={styles.details}>{details.start_at}</Text>
                                 </View>
                                 <View>
                                     <Text style={styles.title}>Specialty</Text>
                                     <Text style={styles.details}>{details.specialty}</Text>
-                                </View>
-                                <View>
-                                    <Text style={styles.title}>Telephone No</Text>
-                                    <Text style={styles.details}>{doctor.telephone}</Text>
                                 </View>
                             </View>
                         </View>
@@ -157,13 +175,22 @@ export default function QueueDetails({ navigation, route }) {
                                             <Text style={styles.details}>{patient.first_name + ' ' + patient.last_name}</Text>
                                         </View>
                                         <View>
-                                            <Text style={styles.title}>Patient email</Text>
-                                            <Text style={styles.details}>{patient.email}</Text>
-                                        </View>
-                                        <View>
                                             <Text style={styles.title}>Telephone No</Text>
                                             <Text style={styles.details}>{patient.telephone}</Text>
                                         </View>
+                                        <View>
+                                            <Text style={styles.title}>Patient email</Text>
+                                            <Text style={styles.details}>{patient.email}</Text>
+                                        </View>
+                                        {details.specialty != 'PHAMARCY' &&
+                                            <View>
+                                                <Text style={styles.title}>Patient concern</Text>
+                                                {details.concern == null
+                                                    ? <Text style={styles.details}>None</Text>
+                                                    : <Text style={styles.details}>{details.concern}</Text>
+                                                }
+                                            </View>
+                                        }
                                     </View>
                                     <View>
                                         <View>
@@ -178,15 +205,8 @@ export default function QueueDetails({ navigation, route }) {
                                 </View>
                             </View>
                         }
-                        <View>
-                            {details.status == 'CANCELLED' &&
-                                <View>
-                                    <Text style={styles.title}>Cancelled Reason</Text>
-                                    <Text style={styles.details}>{details.feedback.feedback}</Text>
-                                </View>
-                            }
-                        </View>
                     </View>
+                    {details.status == 'CANCELLED' && <Reason />}
                     {details.status == 'COMPLETED' && <Feedback />}
                 </View>
             </ScrollView>

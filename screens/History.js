@@ -10,9 +10,9 @@ import ErrorMessage from '../components/ErrorMessage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function History({ navigation, route }) {
-    const [error, setError] = useState([]);
-    const [isVisible, setIsVisible] = useState(false);
-    const [queueId, setQueueId] = useState(null);
+    // const [error, setError] = useState([]);
+    // const [isVisible, setIsVisible] = useState(false);
+    // const [queueId, setQueueId] = useState(null);
     const [queueHistory, setQueueHistory] = useState(null);
     const [refresh, setRefresh] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -32,7 +32,6 @@ export default function History({ navigation, route }) {
         }
 
         Api.request('getHistory', 'GET', {}).then(response => {
-            console.log(response);
             setQueueHistory(response.history);
             getUserRole();
             setLoading(false);
@@ -40,86 +39,86 @@ export default function History({ navigation, route }) {
         });
     }, [refresh, route.params?.refresh]);
 
-    const FeedbackModal = () => {
-        var feedback = '';
-        return (
-            <Modal
-                isVisible={isVisible}
-            >
-                <View style={styles.modalContainer}>
-                    <Text style={styles.details}>Please provide your feedback below.</Text>
-                    <TextInput
-                        multiline
-                        numberOfLines={4}
-                        style={styles.input}
-                        onChangeText={text => feedback = text}
-                    />
-                    {error.feedback && <ErrorMessage message={error.feedback} />}
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={{ flex: 1, marginRight: 10 }}>
-                            <PrimaryButton title='SUBMIT' action={() => submitFeedback(feedback)} />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <DangerButton title='CANCEL' action={() => setIsVisible(false)} />
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-        );
-    }
+    // const FeedbackModal = () => {
+    //     var feedback = '';
+    //     return (
+    //         <Modal
+    //             isVisible={isVisible}
+    //         >
+    //             <View style={styles.modalContainer}>
+    //                 <Text style={styles.details}>Please provide your feedback below.</Text>
+    //                 <TextInput
+    //                     multiline
+    //                     numberOfLines={4}
+    //                     style={styles.input}
+    //                     onChangeText={text => feedback = text}
+    //                 />
+    //                 {error.feedback && <ErrorMessage message={error.feedback} />}
+    //                 <View style={{ flexDirection: 'row' }}>
+    //                     <View style={{ flex: 1, marginRight: 10 }}>
+    //                         <PrimaryButton title='SUBMIT' action={() => submitFeedback(feedback)} />
+    //                     </View>
+    //                     <View style={{ flex: 1 }}>
+    //                         <DangerButton title='CANCEL' action={() => setIsVisible(false)} />
+    //                     </View>
+    //                 </View>
+    //             </View>
+    //         </Modal>
+    //     );
+    // }
 
-    const submitFeedback = (feedback) => {
-        Api.request('storeFeedback', 'POST', { queueId: queueId, feedback: feedback }).then(response => {
-            if (response.success) {
-                setIsVisible(false);
-                alert('Feedback submitted successfully');
-                setError([]);
-                setRefresh(true);
-            } else {
-                setError(response.message);
-            }
-        })
-    }
+    // const submitFeedback = (feedback) => {
+    //     Api.request('storeFeedback', 'POST', { queueId: queueId, feedback: feedback }).then(response => {
+    //         if (response.success) {
+    //             setIsVisible(false);
+    //             alert('Feedback submitted successfully');
+    //             setError([]);
+    //             setRefresh(true);
+    //         } else {
+    //             setError(response.message);
+    //         }
+    //     })
+    // }
 
-    const FeedbackButton = ({ item }) => (
-        <View>
-            {item.feedback
-                ?
-                <TouchableOpacity
-                    style={styles.disabledButton}
-                    disabled={true}
-                >
-                    <Text style={{ color: 'white' }}>Feedback Sent</Text>
-                </TouchableOpacity>
-                :
-                <TouchableOpacity
-                    style={styles.feedbackButton}
-                    onPress={() => {
-                        setQueueId(item.id);
-                        setIsVisible(true);
-                    }}
-                >
-                    <Text style={{ color: 'white' }}>Send Feedback</Text>
-                </TouchableOpacity>
-            }
-        </View>
-    );
+    // const FeedbackButton = ({ item }) => (
+    //     <View>
+    //         {item.feedback
+    //             ?
+    //             <TouchableOpacity
+    //                 style={styles.disabledButton}
+    //                 disabled={true}
+    //             >
+    //                 <Text style={{ color: 'white' }}>Feedback Sent</Text>
+    //             </TouchableOpacity>
+    //             :
+    //             <TouchableOpacity
+    //                 style={styles.feedbackButton}
+    //                 onPress={() => {
+    //                     setQueueId(item.id);
+    //                     setIsVisible(true);
+    //                 }}
+    //             >
+    //                 <Text style={{ color: 'white' }}>Send Feedback</Text>
+    //             </TouchableOpacity>
+    //         }
+    //     </View>
+    // );
 
     const QueueItem = ({ item }) => (
         <TouchableWithoutFeedback onPress={() => navigation.navigate('QueueDetails', { queueId: item.id })}>
             <View style={styles.itemContainer}>
                 <View>
-                    <Text style={styles.type}>{item.type} ({item.status})</Text>
+                    <Text style={styles.type}>{item.type}</Text>
                     <Text style={styles.date}>{item.created_at} {item.start_at}</Text>
-                    <Details item={item}/>
+                    <Details item={item} />
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Entypo name="location-pin" size={17} color="black" />
                         <Text>{item.location}</Text>
                     </View>
                 </View>
-                {userRole == 'PATIENT' &&
-                    <FeedbackButton item={item} />
-                }
+                <View style={[styles.statusContainer, item.status == 'COMPLETED' ? { backgroundColor: '#A5D6A7' } : { backgroundColor: '#FFE082' }]}>
+                    <Text style={{fontFamily: 'RobotoBold'}}>{item.status}</Text>
+                </View>
             </View>
         </TouchableWithoutFeedback>
     );
@@ -145,7 +144,7 @@ export default function History({ navigation, route }) {
         <TouchableWithoutFeedback onPress={() => navigation.navigate('AppointmentDetails', { appointmentId: item.id })}>
             <View style={styles.itemContainer}>
                 <View>
-                    <Text style={styles.type}>{item.type} ({item.status})</Text>
+                    <Text style={styles.type}>{item.type}</Text>
                     <Text style={styles.date}>{item.date_string}</Text>
                     <Text style={styles.date}>{item.start_at + '-' + item.end_at}</Text>
                     <Details item={item} />
@@ -154,9 +153,9 @@ export default function History({ navigation, route }) {
                         <Text>{item.location}</Text>
                     </View>
                 </View>
-                {userRole == 'PATIENT' &&
-                    <FeedbackButton item={item} />
-                }
+                <View style={[styles.statusContainer, item.status == 'COMPLETED' ? { backgroundColor: '#A5D6A7' } : { backgroundColor: '#FFE082' }]}>
+                    <Text style={{fontFamily: 'RobotoBold'}}>{item.status}</Text>
+                </View>
             </View>
         </TouchableWithoutFeedback>
     )
@@ -184,7 +183,7 @@ export default function History({ navigation, route }) {
     } else {
         return (
             <View style={globalStyles.container_2}>
-                <FeedbackModal />
+                {/* <FeedbackModal /> */}
                 <History />
             </View>
         );
@@ -238,5 +237,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         textAlignVertical: 'top',
         padding: 10
-    }
+    },
+    statusContainer: {
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center'
+    },
 });

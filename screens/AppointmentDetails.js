@@ -292,12 +292,20 @@ export default function AppointmentDetails({ navigation, route}) {
                                             <Text style={styles.details}>{patient.first_name + ' ' + patient.last_name}</Text>
                                         </View>
                                         <View>
+                                            <Text style={styles.title}>Telephone No</Text>
+                                            <Text style={styles.details}>{patient.telephone}</Text>
+                                        </View>
+                                        <View>
                                             <Text style={styles.title}>Patient email</Text>
                                             <Text style={styles.details}>{patient.email}</Text>
                                         </View>
                                         <View>
-                                            <Text style={styles.title}>Telephone No</Text>
-                                            <Text style={styles.details}>{patient.telephone}</Text>
+                                            <Text style={styles.title}>Patient concern</Text>
+                                            {appointment.concern != null 
+                                            ?<Text style={styles.details}>{appointment.concern}</Text>
+                                            :<Text style={styles.details}>None</Text>
+                                            }
+                                            
                                         </View>
                                     </View>  
                                     <View>
