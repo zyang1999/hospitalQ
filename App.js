@@ -1,25 +1,22 @@
-import React, { useEffect } from 'react';
-import Authentication from './services/Authentication';
-import messaging from '@react-native-firebase/messaging';
+import React, { useEffect } from "react";
+import Authentication from "./services/Authentication";
+import messaging from "@react-native-firebase/messaging";
 
 export default function App() {
+    useEffect(() => {
+        async function requestUserPermission() {
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  
-  useEffect(() => {
+            if (enabled) {
+                console.log("Authorization status:", authStatus);
+            }
+        }
 
-    async function requestUserPermission() {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        requestUserPermission();
+    }, []);
 
-      if (enabled) {
-        console.log('Authorization status:', authStatus);
-      }
-    }
-
-    requestUserPermission();
-  }, []);
-
-  return (<Authentication />);
+    return <Authentication />;
 }

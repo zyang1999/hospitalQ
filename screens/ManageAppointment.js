@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { globalStyles } from '../styles';
-import { Agenda } from 'react-native-calendars';
-import Loading from '../components/Loading';
-import api from '../services/Api';
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { globalStyles } from "../styles";
+import { Agenda } from "react-native-calendars";
+import Loading from "../components/Loading";
+import api from "../services/Api";
 import { Appointment } from "../components/Appointment";
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function ManageAppointment({ navigation, route }) {
     const currentDate = new Date().getTime();
-    
+
     const [allAppointments, setAllAppointments] = useState(null);
     const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false);
@@ -18,40 +18,43 @@ export default function ManageAppointment({ navigation, route }) {
         if (route.params?.appointmentId) {
             setLoading(true);
         }
-        api.request('getDoctorAppointments', 'GET', {}).then(response => {
+        api.request("getDoctorAppointments", "GET", {}).then((response) => {
+            console.log(response);
             loadItems(currentDate, response.allAppointments);
-        })
-    }, [route.params?.appointmentId, refresh])
+        });
+    }, [route.params?.appointmentId, refresh]);
 
     const getMarkedDate = () => {
         const markedDate = {};
-        Object.keys(allAppointments).map(item => {
+        Object.keys(allAppointments).map((item) => {
             if (allAppointments[item].includes(allAppointments[item][0], 0)) {
                 markedDate[item] = { marked: true };
             }
         });
         return markedDate;
-    }
+    };
     const getItem = () => {
         const itemObject = {};
-        Object.keys(allAppointments).map(item => itemObject[item] = allAppointments[item]);
+        Object.keys(allAppointments).map(
+            (item) => (itemObject[item] = allAppointments[item])
+        );
         return itemObject;
-    }
+    };
 
     const timeToString = (time) => {
         const date = new Date(time);
-        return date.toISOString().split('T')[0];
+        return date.toISOString().split("T")[0];
     };
 
     const renderItem = (item) => {
         return (
             <Appointment
-                props={item}    
+                props={item}
                 navigation={navigation}
-                previousScreen='ManageAppointment'
+                previousScreen="ManageAppointment"
             />
         );
-    }
+    };
 
     const loadItems = (day, allAppointments) => {
         setTimeout(() => {
@@ -77,58 +80,89 @@ export default function ManageAppointment({ navigation, route }) {
             <View style={globalStyles.container_2}>
                 <Agenda
                     selected={currentDate}
-                    loadItemsForMonth={() => loadItems(currentDate, allAppointments)}
+                    loadItemsForMonth={() =>
+                        loadItems(currentDate, allAppointments)
+                    }
                     markedDates={getMarkedDate()}
                     pastScrollRange={50}
                     items={getItem()}
                     renderItem={renderItem}
-                    onRefresh={() => { setRefresh(true); }}
+                    onRefresh={() => {
+                        setRefresh(true);
+                    }}
                     refreshing={refresh}
-                    renderEmptyData={() => { return (<Loading />); }}
-                    renderEmptyDate={() => { return (<View style={{ height: 100, borderBottomWidth: 1, opacity: 0.2 }} />); }}
+                    renderEmptyData={() => {
+                        return <Loading />;
+                    }}
+                    renderEmptyDate={() => {
+                        return (
+                            <View
+                                style={{
+                                    height: 100,
+                                    borderBottomWidth: 1,
+                                    opacity: 0.2,
+                                }}
+                            />
+                        );
+                    }}
                 />
-                <View style={{ bottom: 0, right: 0, margin: 20, position: 'absolute' }}>
+                <View
+                    style={{
+                        bottom: 0,
+                        right: 0,
+                        margin: 20,
+                        position: "absolute",
+                    }}
+                >
                     <TouchableOpacity
                         style={styles.addButton}
-                        onPress={() => navigation.navigate('AddAppointment')}
+                        onPress={() => navigation.navigate("AddAppointment")}
                     >
-                        <Text style={{ fontFamily: 'RobotoBold', color: 'white', fontSize: 30 }}>+</Text>
+                        <Text
+                            style={{
+                                fontFamily: "RobotoBold",
+                                color: "white",
+                                fontSize: 30,
+                            }}
+                        >
+                            +
+                        </Text>
                     </TouchableOpacity>
                 </View>
-            </View >
+            </View>
         );
     } else {
-        return (<Loading />);
+        return <Loading />;
     }
 }
 
 const styles = StyleSheet.create({
     agendaContainer: {
-        backgroundColor: 'white',
+        backgroundColor: "white",
         height: 100,
         margin: 10,
         borderRadius: 10,
         padding: 10,
         elevation: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
     statusContainer: {
         padding: 10,
         borderRadius: 10,
         flex: 1,
-        alignItems: 'center'
+        alignItems: "center",
     },
     appointmentInfoContainer: {
-        flex: 2
+        flex: 2,
     },
     addButton: {
-        backgroundColor: '#42A5F5',
+        backgroundColor: "#42A5F5",
         height: 50,
         width: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 100
-    }
-})
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 100,
+    },
+});

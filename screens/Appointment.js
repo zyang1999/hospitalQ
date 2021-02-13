@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import api from '../services/Api';
-import { globalStyles } from '../styles';
-import Loading from '../components/Loading';
-import * as AppointmentItem from '../components/Appointment';
-import { Entypo } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useEffect, useState } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+} from "react-native";
+import api from "../services/Api";
+import { globalStyles } from "../styles";
+import Loading from "../components/Loading";
+import { Entypo } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Appointment({ navigation, route }) {
-
     const [appointment, setAppointment] = useState([]);
     const [appointmentToday, setAppointmentToday] = useState(null);
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        api.request('getAppointment', 'GET', {}).then(response => {
+        api.request("getAppointment", "GET", {}).then((response) => {
             console.log(response);
             setAppointmentToday(response.appointmentToday);
             setAppointment(response.appointments);
@@ -25,26 +29,39 @@ export default function Appointment({ navigation, route }) {
     const AppointmentItem = ({ item }) => (
         <TouchableOpacity
             style={styles.agendaContainer}
-            onPress={() => navigation.navigate('AppointmentDetails', { appointmentId: item.id, previousScreen: 'Appointment' })}
+            onPress={() =>
+                navigation.navigate("AppointmentDetails", {
+                    appointmentId: item.id,
+                    previousScreen: "Appointment",
+                })
+            }
         >
             <View style={styles.appointmentInfoContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginBottom: 10,
+                    }}
+                >
                     <MaterialIcons name="date-range" size={24} color="black" />
                     <Text style={{ fontSize: 15 }}>{item.date_string}</Text>
                 </View>
-                <Text style={{ fontFamily: 'RobotoBold' }}>{item.start_at + ' - ' + item.end_at}</Text>
+                <Text style={{ fontFamily: "RobotoBold" }}>
+                    {item.start_at + " - " + item.end_at}
+                </Text>
                 <Text>{item.specialty}</Text>
-                <View style={{ flexDirection: 'row', alignpropss: 'center' }}>
+                <View style={{ flexDirection: "row", alignpropss: "center" }}>
                     <Entypo name="location-pin" size={24} color="black" />
                     <Text>{item.location}</Text>
                 </View>
 
-                {item.status != 'AVAILABLE' &&
+                {item.status != "AVAILABLE" && (
                     <View>
                         <Text>Booked By: </Text>
                         <Text>{item.patient_full_name}</Text>
                     </View>
-                }
+                )}
             </View>
             <View style={styles.statusContainer}>
                 <Text>{item.status}</Text>
@@ -52,9 +69,7 @@ export default function Appointment({ navigation, route }) {
         </TouchableOpacity>
     );
 
-    const renderItem = ({ item }) => (
-        <AppointmentItem item={item} />
-    );
+    const renderItem = ({ item }) => <AppointmentItem item={item} />;
 
     const AppointmentList = () => {
         if (appointment.length != 0) {
@@ -62,66 +77,83 @@ export default function Appointment({ navigation, route }) {
                 <FlatList
                     data={appointment}
                     renderItem={renderItem}
-                    keyExtractor={item => item.id.toString()}
+                    keyExtractor={(item) => item.id.toString()}
                 />
             );
         } else {
             return (
-                <View style={[styles.appointmentContainer, { alignItems: 'center', justifyContent: 'center', flex: 0.5 }]}>
+                <View
+                    style={[
+                        styles.appointmentContainer,
+                        {
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flex: 0.5,
+                        },
+                    ]}
+                >
                     <Text>No Appointment</Text>
                 </View>
             );
         }
-    }
+    };
 
     const AppointmentToday = () => {
         if (appointmentToday != null) {
-            return (
-                <AppointmentItem item={appointmentToday} />
-            );
+            return <AppointmentItem item={appointmentToday} />;
         } else {
             return (
-                <View style={[styles.appointmentContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+                <View
+                    style={[
+                        styles.appointmentContainer,
+                        {
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        },
+                    ]}
+                >
                     <Text>No Appointment Today</Text>
                 </View>
             );
         }
-    }
+    };
 
     if (ready) {
         return (
             <View style={[globalStyles.container_2]}>
                 <View style={{ flex: 5 }}>
-                    <Text style={styles.appointmentListTitle}>Appointment Today</Text>
+                    <Text style={styles.appointmentListTitle}>
+                        Appointment Today
+                    </Text>
                     <AppointmentToday />
                 </View>
                 <View style={{ flex: 7 }}>
-                    <Text style={styles.appointmentListTitle}>Appointment List</Text>
+                    <Text style={styles.appointmentListTitle}>
+                        Appointment List
+                    </Text>
                     <AppointmentList />
                 </View>
                 <View style={styles.addbuttonContainer}>
                     <TouchableOpacity
                         style={styles.addButton}
-                        onPress={() => navigation.navigate('MakeAppointment')}
+                        onPress={() => navigation.navigate("MakeAppointment")}
                     >
                         <Text style={styles.add}>+</Text>
                     </TouchableOpacity>
                 </View>
-
             </View>
         );
     } else {
-        return (<Loading />);
+        return <Loading />;
     }
-
-
 }
 
 const styles = StyleSheet.create({
     appointmentListTitle: {
         fontSize: 25,
-        textAlign: 'center',
-        margin: 10
+        textAlign: "center",
+        margin: 10,
     },
     appointmentTodayContainer: {
         shadowColor: "#000",
@@ -132,7 +164,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         margin: 10,
         borderRadius: 10,
         padding: 10,
@@ -147,49 +179,48 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         margin: 10,
         borderRadius: 10,
         padding: 10,
-
     },
     addbuttonContainer: {
         flex: 1,
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
-        paddingBottom: 20
+        alignItems: "flex-end",
+        justifyContent: "flex-end",
+        paddingBottom: 20,
     },
     addButton: {
-        backgroundColor: '#42A5F5',
+        backgroundColor: "#42A5F5",
         borderRadius: 100,
         height: 50,
         width: 50,
-        alignItems: 'center',
-        justifyContent: 'center'
+        alignItems: "center",
+        justifyContent: "center",
     },
     add: {
-        color: 'white',
+        color: "white",
         fontSize: 30,
-        fontFamily: 'RobotoBold'
+        fontFamily: "RobotoBold",
     },
     statusContainer: {
         padding: 10,
         borderRadius: 10,
         flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#FFE082'
+        alignItems: "center",
+        backgroundColor: "#FFE082",
     },
     appointmentInfoContainer: {
-        flex: 2
+        flex: 2,
     },
     agendaContainer: {
-        backgroundColor: 'white',
+        backgroundColor: "white",
         margin: 5,
         borderRadius: 10,
         padding: 10,
         elevation: 3,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
 });

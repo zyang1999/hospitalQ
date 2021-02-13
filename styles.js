@@ -1,175 +1,176 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: '10%',
-    paddingVertical: '40%',
+    backgroundColor: "white",
+    paddingHorizontal: "10%",
+    paddingVertical: "40%",
   },
   input: {
     height: 40,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
     borderRadius: 10,
     paddingHorizontal: 20,
     marginVertical: 10,
   },
   registerButton: {
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   primaryButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
     padding: 10,
     borderRadius: 10,
-    color: 'white',
+    color: "white",
     fontSize: 20,
     marginVertical: 10,
-    fontFamily: 'RobotoBold',
-    textAlign: 'center',
-    elevation: 2
+    fontFamily: "RobotoBold",
+    textAlign: "center",
+    elevation: 2,
   },
   secondaryButton: {
-    backgroundColor: '#607D8B',
+    backgroundColor: "#607D8B",
     padding: 10,
     borderRadius: 10,
-    color: 'white',
+    color: "white",
     fontSize: 20,
     marginVertical: 10,
-    fontFamily: 'RobotoBold',
-    textAlign: 'center',
-    elevation: 2
+    fontFamily: "RobotoBold",
+    textAlign: "center",
+    elevation: 2,
   },
   dangerButton: {
-    backgroundColor: '#E74C3C',
+    backgroundColor: "#E74C3C",
     padding: 10,
     borderRadius: 10,
-    color: 'white',
+    color: "white",
     fontSize: 20,
     marginVertical: 10,
-    fontFamily: 'RobotoBold',
-    textAlign: 'center',
-    elevation: 2
+    fontFamily: "RobotoBold",
+    textAlign: "center",
+    elevation: 2,
   },
   appTitle: {
     fontSize: 30,
-    textAlign: 'center',
-    paddingBottom: 20
+    textAlign: "center",
+    paddingBottom: 20,
+    color: "black",
   },
   errorMessage: {
     paddingLeft: 10,
-    color: 'white',
-    backgroundColor: '#EF5350',
+    color: "white",
+    backgroundColor: "#EF5350",
     padding: 10,
     borderRadius: 10,
-    marginVertical: 10
+    marginVertical: 10,
   },
   barCodeScanner: {
-    marginVertical: '20%',
-    marginVertical: '10%'
+    marginVertical: "20%",
+    marginVertical: "10%",
   },
   consultationImage: {
     flex: 1,
     width: null,
     height: null,
-    resizeMode: 'contain',
-    borderRadius: 30
+    resizeMode: "contain",
+    borderRadius: 30,
   },
   h1: {
     fontSize: 50,
     marginVertical: 10,
-    fontFamily: 'RobotoBold'
+    fontFamily: "RobotoBold",
   },
   h2: {
     fontSize: 40,
     marginVertical: 10,
-    fontFamily: 'RobotoBold'
+    fontFamily: "RobotoBold",
   },
   h3: {
     fontSize: 30,
     marginVertical: 10,
-    fontFamily: 'RobotoRegular',
+    fontFamily: "RobotoRegular",
   },
   h4: {
     fontSize: 20,
     marginVertical: 10,
-    fontFamily: 'RobotoRegular'
+    fontFamily: "RobotoRegular",
   },
   h5: {
     fontSize: 15,
     marginVertical: 10,
-    fontFamily: 'RobotoRegular'
+    fontFamily: "RobotoRegular",
   },
   UserQueueBox: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     elevation: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
     marginTop: 20,
     marginHorizontal: 5,
-    padding: 10
+    padding: 10,
   },
   queueInfo: {
     marginVertical: 10,
     borderWidth: 2,
-    borderRadius: 10
+    borderRadius: 10,
   },
   queueStatus: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginBottom: 10
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginBottom: 10,
   },
   queueTitle: {
     elevation: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 16,
     padding: 10,
     borderRadius: 20,
-    textAlign: 'center',
-    width: '48%',
+    textAlign: "center",
+    width: "48%",
     marginVertical: 10,
-    textTransform: 'uppercase',
-    backgroundColor: 'white'
+    textTransform: "uppercase",
+    backgroundColor: "white",
   },
   queueNumber: {
     fontSize: 20,
     padding: 10,
     borderRadius: 20,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 5,
-    textTransform: 'uppercase',
-    backgroundColor: 'white',
+    textTransform: "uppercase",
+    backgroundColor: "white",
     elevation: 1,
   },
   serving: {
     fontSize: 20,
     padding: 10,
     borderRadius: 20,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 5,
-    textTransform: 'uppercase',
-    backgroundColor: '#58D68D',
+    textTransform: "uppercase",
+    backgroundColor: "#58D68D",
   },
   waiting: {
     fontSize: 20,
     padding: 10,
     borderRadius: 20,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 5,
-    textTransform: 'uppercase',
-    backgroundColor: '#F4D03F',
+    textTransform: "uppercase",
+    backgroundColor: "#F4D03F",
   },
   container_2: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
-    resizeMode: 'contain'
-  }
+    resizeMode: "contain",
+  },
 });
