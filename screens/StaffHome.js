@@ -15,6 +15,7 @@ import messaging from "@react-native-firebase/messaging";
 import Modal from "react-native-modal";
 import { SecondaryButton, DangerButton } from "../components/Button";
 import ErrorMessage from "../components/ErrorMessage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function StaffHome() {
     const [ready, setReady] = useState(false);
@@ -23,6 +24,15 @@ export default function StaffHome() {
     const [isModalVisible, setModalVisible] = useState(false);
     const [currentQueueID, setCurrentQueueID] = useState(null);
     const [error, setError] = useState([]);
+    const [counter, setCounter] = useState(null);
+    const [userRole, setUserRole] = useState(null);
+    const [nextPatient, setNextPatient] = useState(null);
+
+    const getUserRole = async () => {
+        let userRole = await AsyncStorage.getItem("userRole");
+        setUserRole(userRole);
+    };
+    getUserRole();
 
     React.useEffect(() => {
         setError([]);
@@ -30,6 +40,7 @@ export default function StaffHome() {
             Api.request("getAllQueue", "GET", {}).then((response) => {
                 setAllQueue(response.allQueue);
                 setCurrentQueue(response.currentQueue);
+                setNextPatient(response.nextPatient);
                 setCurrentQueueID(
                     response.currentQueue ? response.currentQueue.id : null
                 );
@@ -56,9 +67,10 @@ export default function StaffHome() {
     }, [ready]);
 
     const updateQueue = () => {
-        Api.request("updateQueue", "POST", { queue_id: currentQueueID }).then(
-            setReady(false)
-        );
+        Api.request("updateQueue", "POST", {
+            queue_id: currentQueueID,
+            counterNo: counter,
+        }).then(setReady(false));
     };
 
     const stopQueue = () => {
@@ -243,6 +255,27 @@ export default function StaffHome() {
         }
     };
 
+    const NextPatientDetails = () => {
+        if (nextPatient == null) {
+            return (
+                <View style={globalStyles.UserQueueBox}>
+                    <Text>No Next Patient</Text>
+                </View>
+            );
+        }
+        return (
+            <View style={globalStyles.UserQueueBox}>
+                <Text style={{ fontFamily: "RobotoBold" }}>Next Patient</Text>
+                <Image
+                    style={{ height: 70, width: 70, borderRadius: 100 }}
+                    source={{ uri: nextPatient.selfie_string }}
+                />
+                <Text>{nextPatient.full_name}</Text>
+                <Text>{nextPatient.IC_no}</Text>
+            </View>
+        );
+    };
+
     if (ready) {
         return (
             <View style={globalStyles.container_2}>
@@ -255,7 +288,7 @@ export default function StaffHome() {
                         <View style={{ padding: 10 }}>
                             <CancelModal />
                             <CurrentPatient />
-
+                            {userRole == "NURSE" && <NextPatientDetails />}
                             <Text
                                 style={[
                                     globalStyles.h3,
