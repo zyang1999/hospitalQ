@@ -7,6 +7,7 @@ import {
     Image,
     StyleSheet,
     TextInput,
+    RefreshControl,
 } from "react-native";
 import { globalStyles } from "../styles";
 import Loading from "../components/Loading";
@@ -24,9 +25,9 @@ export default function StaffHome() {
     const [isModalVisible, setModalVisible] = useState(false);
     const [currentQueueID, setCurrentQueueID] = useState(null);
     const [error, setError] = useState([]);
-    const [counter, setCounter] = useState(null);
     const [userRole, setUserRole] = useState(null);
     const [nextPatient, setNextPatient] = useState(null);
+    const [queueRefreshing, setQueueRefreshing] = useState(false);
 
     const getUserRole = async () => {
         let userRole = await AsyncStorage.getItem("userRole");
@@ -51,16 +52,20 @@ export default function StaffHome() {
 
         messaging().onMessage(async (remoteMessage) => {
             if (remoteMessage.data.type == "refreshQueue") {
+                setQueueRefreshing(true);
                 Api.request("getAllQueue", "GET", {}).then((response) => {
                     setAllQueue(response.allQueue);
+                    setQueueRefreshing(false);
                 });
             }
         });
 
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
             if (remoteMessage.data.type == "refreshQueue") {
+                setQueueRefreshing(true);
                 Api.request("getAllQueue", "GET", {}).then((response) => {
-                    setReady(false);
+                    setAllQueue(response.allQueue);
+                    setQueueRefreshing(false);
                 });
             }
         });
@@ -69,7 +74,6 @@ export default function StaffHome() {
     const updateQueue = () => {
         Api.request("updateQueue", "POST", {
             queue_id: currentQueueID,
-            counterNo: counter,
         }).then(setReady(false));
     };
 
@@ -284,6 +288,9 @@ export default function StaffHome() {
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
                     showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl refreshing={queueRefreshing} />
+                    }
                     ListHeaderComponent={
                         <View style={{ padding: 10 }}>
                             <CancelModal />

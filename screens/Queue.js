@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Image,
     TextInput,
+    RefreshControl,
 } from "react-native";
 import { globalStyles } from "../styles";
 import {
@@ -26,6 +27,7 @@ export default function Queue({ navigation, route }) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [error, setError] = useState([]);
     const [user, setUser] = useState(null);
+    const [queueRefreshing, setQueueRefreshing] = useState(false);
 
     React.useEffect(() => {
         const getQueue = () =>
@@ -43,14 +45,21 @@ export default function Queue({ navigation, route }) {
             });
 
         messaging().onMessage(async (remoteMessage) => {
+            setQueueRefreshing(true);
             if (remoteMessage.data.type == "refreshQueue") {
-                setReady(false);
+                Api.request("getAllQueue", "GET", {}).then((response) => {
+                    setAllQueue(response.allQueue);
+                    setQueueRefreshing(false);
+                });
             }
         });
 
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
             if (remoteMessage.data.type == "refreshQueue") {
-                setReady(false);
+                Api.request("getAllQueue", "GET", {}).then((response) => {
+                    setAllQueue(response.allQueue);
+                    setQueueRefreshing(false);
+                });
             }
         });
 
@@ -189,6 +198,7 @@ export default function Queue({ navigation, route }) {
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={queueRefreshing} />}
             ListHeaderComponent={
                 <View>
                     <CancelModal />

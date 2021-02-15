@@ -159,7 +159,11 @@ export default function History({ navigation, route }) {
         if (queueHistory.length == 0) {
             return (
                 <View
-                    style={{ justifyContent: "center", alignItems: "center" , flex: 1}}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flex: 1,
+                    }}
                 >
                     <Text>No History</Text>
                 </View>
