@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Alert, TextInput, Button } from "react-native";
+import { Text, View, StyleSheet, Alert, TextInput } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { globalStyles } from "../styles";
 import { baseUrl } from "../services/baseUrl";
 import Api from "../services/Api";
 import Modal from "react-native-modal";
 import { PrimaryButton, SecondaryButton } from "../components/Button";
+import ErrorMessage from "../components/ErrorMessage";
 
-export default function joinQueue({ navigation, route }) {
+export default function joinQueue({ navigation }) {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const [specialty, setSpecialty] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -34,11 +36,19 @@ export default function joinQueue({ navigation, route }) {
                         numberOfLines={4}
                         onChangeText={(text) => (concern = text)}
                     />
+                    {error && <ErrorMessage message={error} />}
                     <View style={{ flexDirection: "row" }}>
                         <View style={{ flex: 1, marginRight: 10 }}>
                             <PrimaryButton
                                 title="SUBMIT"
-                                action={() => joinQueue(concern)}
+                                action={() => {
+                                    if (concern == "") {
+                                        return setError(
+                                            "The concern field is required."
+                                        );
+                                    }
+                                    joinQueue(concern);
+                                }}
                             />
                         </View>
                         <View style={{ flex: 1 }}>
@@ -59,7 +69,9 @@ export default function joinQueue({ navigation, route }) {
                 specialty: specialty,
                 concern: concern,
             }).then((response) => {
-                navigation.navigate("Queue", { queueId: response.queue.id });
+                navigation.navigate("Queue", {
+                    queueId: response.queue.id,
+                });
             });
         } catch (e) {
             handleError();
@@ -67,13 +79,18 @@ export default function joinQueue({ navigation, route }) {
     };
 
     const handleBarCodeScanned = async ({ data }) => {
+        console.log(data);
         let json;
         setScanned(true);
-        json = JSON.parse(data);
-        if (json.url === baseUrl) {
-            setSpecialty(json.specialty);
-            setIsVisible(true);
-        } else {
+        try {
+            json = JSON.parse(data);
+            if (json.url === baseUrl) {
+                setSpecialty(json.specialty);
+                setIsVisible(true);
+            } else {
+                handleError();
+            }
+        } catch (e) {
             handleError();
         }
     };
@@ -81,7 +98,7 @@ export default function joinQueue({ navigation, route }) {
     const handleError = () => {
         Alert.alert(
             "Invalid QR Code",
-            "This QR Code is invalid to join Queue",
+            "This QR code is invalid to join queue",
             [
                 {
                     text: "Cancel",

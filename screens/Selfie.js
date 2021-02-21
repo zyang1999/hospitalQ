@@ -4,6 +4,7 @@ import { globalStyles } from "../styles";
 import { PrimaryButton, SecondaryButton } from "../components/Button";
 import Camera from "../services/Camera";
 import Api from "../services/Api";
+import ErrorMessage from '../components/ErrorMessage';
 
 export default function Selfie({ navigation }) {
     const [image, setImage] = useState(null);
@@ -25,7 +26,10 @@ export default function Selfie({ navigation }) {
         });
     };
 
-    const takePhoto = () => Camera.pickImage().then((image) => setImage(image));
+    const takePhoto = () => Camera.pickImage().then((image) => {
+        setImage(image);
+        setError({});
+    });
 
     return (
         <View
@@ -58,7 +62,7 @@ export default function Selfie({ navigation }) {
                     </Text>
                 </View>
             )}
-            {error.selfie && <Text>{error.selfie}</Text>}
+            {error.selfie && <ErrorMessage message={error.selfie} />}
             <SecondaryButton title="TAKE A SELFIE" action={takePhoto} />
             <PrimaryButton title="VERIFY ACCOUNT" action={verify} />
         </View>

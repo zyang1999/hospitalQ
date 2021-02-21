@@ -70,7 +70,6 @@ export default function AppointmentDetails({ navigation, route }) {
     };
 
     const removeAppointment = (reason) => {
-        setModalVisible(false);
         api.request("deleteAppointment", "POST", {
             id: appointment.id,
             feedback: reason,
@@ -181,8 +180,8 @@ export default function AppointmentDetails({ navigation, route }) {
                             style={styles.input}
                             onChangeText={(text) => (reason = text)}
                         />
-                        {error.reason && (
-                            <ErrorMessage message={error.reason} />
+                        {error.feedback && (
+                            <ErrorMessage message={error.feedback} />
                         )}
                     </View>
                 )}
@@ -222,9 +221,12 @@ export default function AppointmentDetails({ navigation, route }) {
             );
         } else {
             return (
-                <View style={styles.card}>
-                    <Text style={styles.title}>Feedback</Text>
-                    <Text>No Feedback</Text>
+                <View>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Feedback</Text>
+                        <Text>No Feedback</Text>
+                    </View>
+                    {userRole == "PATIENT" && <FeedbackButton />}
                 </View>
             );
         }
@@ -241,9 +243,7 @@ export default function AppointmentDetails({ navigation, route }) {
 
     const DoctorButton = () => {
         if (checkDate(appointment.date_string) == "today") {
-            if (appointment.status == "AVAILABLE") {
-                return <View />;
-            } else {
+            if (appointment.status == "BOOKED") {
                 return (
                     <View style={styles.button}>
                         <PrimaryButton
@@ -252,6 +252,8 @@ export default function AppointmentDetails({ navigation, route }) {
                         />
                     </View>
                 );
+            } else {
+                return <View />;
             }
         } else if (checkDate(appointment.date_string) == "future") {
             if (appointment.status == "CANCELLED") {
@@ -279,14 +281,18 @@ export default function AppointmentDetails({ navigation, route }) {
     const PatientButton = () => {
         switch (checkDate(appointment.date_string)) {
             case "future":
-                return (
-                    <View style={styles.button}>
-                        <DangerButton
-                            title="CANCEL"
-                            action={() => setModalVisible(true)}
-                        />
-                    </View>
-                );
+                if (appointment.status == "CANCELLED") {
+                    return <View />;
+                } else {
+                    return (
+                        <View style={styles.button}>
+                            <DangerButton
+                                title="CANCEL"
+                                action={() => setModalVisible(true)}
+                            />
+                        </View>
+                    );
+                }
             default:
                 if (appointment.status == "COMPLETED") {
                     if (appointment.feedback != null) {

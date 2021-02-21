@@ -203,7 +203,7 @@ export default function Queue({ navigation, route }) {
                 <View>
                     <CancelModal />
                     <Profile />
-                    {userQueue.specialty != "Phamarcy" ? (
+                    {userQueue.specialty != "Pharmacist" ? (
                         <View>
                             <Queue />
                             <Doctor />

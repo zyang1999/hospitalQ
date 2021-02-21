@@ -41,9 +41,8 @@ export default function DoctorAppointment({ navigation, route }) {
         if (appointments.length != 0) {
             return (
                 <View style={globalStyles.container_2}>
-                    <Text style={styles.title}>Appointment Today</Text>
                     <Text style={styles.note}>
-                        This are the appointments for today. You may click on
+                        These are the appointments for today. You may click on
                         the appointment for further details.
                     </Text>
                     <View style={styles.appointmentTodayContainer}>
@@ -56,7 +55,6 @@ export default function DoctorAppointment({ navigation, route }) {
         } else {
             return (
                 <View>
-                    <Text style={styles.title}>Appointment Today</Text>
                     <View
                         style={{
                             justifyContent: "center",

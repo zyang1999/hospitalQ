@@ -24,6 +24,7 @@ export default function Authentication() {
           userToken: action.token,
           userRole: action.role,
           status: action.status,
+          ic: action.ic,
           isLoading: false,
         };
       case "SIGN_IN":
@@ -34,6 +35,7 @@ export default function Authentication() {
           userRole: action.role,
           status: action.status,
           role: action.role,
+          ic: action.ic,
         };
       case "SIGN_OUT":
         return {
@@ -83,6 +85,7 @@ export default function Authentication() {
               token: userToken,
               role: userRole,
               status: userStatus,
+              ic: response.user.IC_no,
             });
           } else {
             return response;
@@ -127,6 +130,7 @@ export default function Authentication() {
             token: userToken,
             role: userRole,
             status: response.user.status,
+            ic: response.user.IC_no,
           });
         });
       } else {
@@ -151,6 +155,7 @@ export default function Authentication() {
             userToken={state.userToken}
             userRole={state.userRole}
             status={state.status}
+            ic={state.ic}
           />
         </AuthContext.Provider>
       );

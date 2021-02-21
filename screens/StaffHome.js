@@ -28,6 +28,7 @@ export default function StaffHome() {
     const [userRole, setUserRole] = useState(null);
     const [nextPatient, setNextPatient] = useState(null);
     const [queueRefreshing, setQueueRefreshing] = useState(false);
+    const [user, setUser] = useState(null);
 
     const getUserRole = async () => {
         let userRole = await AsyncStorage.getItem("userRole");
@@ -45,7 +46,10 @@ export default function StaffHome() {
                 setCurrentQueueID(
                     response.currentQueue ? response.currentQueue.id : null
                 );
-                setReady(true);
+                Api.request("getUser", "GET", {}).then((response) => {
+                    setUser(response.user);
+                    setReady(true);
+                });
             });
 
         getAllQueue();
@@ -99,6 +103,23 @@ export default function StaffHome() {
             }
         });
     };
+
+    const Profile = () => (
+        <View style={styles.profileContainer}>
+            <View style={{ flex: 3 }}>
+                <Image
+                    style={{ width: 70, height: 70, borderRadius: 100 }}
+                    source={{ uri: user.selfie_string }}
+                />
+            </View>
+            <View style={{ flex: 7 }}>
+                <Text>Welcome Back,</Text>
+                <Text style={[globalStyles.h4]}>
+                    {user.first_name + " " + user.last_name}
+                </Text>
+            </View>
+        </View>
+    );
 
     const renderItem = ({ item }) => (
         <View style={globalStyles.queueStatus}>
@@ -293,6 +314,7 @@ export default function StaffHome() {
                     }
                     ListHeaderComponent={
                         <View style={{ padding: 10 }}>
+                            <Profile />
                             <CancelModal />
                             <CurrentPatient />
                             {userRole == "NURSE" && <NextPatientDetails />}
@@ -351,5 +373,14 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         textAlignVertical: "top",
         padding: 10,
+    },
+    profileContainer: {
+        elevation: 4,
+        backgroundColor: "white",
+        marginHorizontal: 5,
+        padding: 10,
+        flexDirection: "row",
+        marginTop: 10,
+        borderRadius: 10,
     },
 });
