@@ -25,6 +25,9 @@ export default function Account({ navigation, route }) {
 
     const uploadPicture = () => {
         camera.openGallery().then((image) => {
+            if (image == null){
+                return;
+            }
             api.request("changeProfileImage", "POST", { image: image }).then(
                 (response) => {
                     alert(response.message);

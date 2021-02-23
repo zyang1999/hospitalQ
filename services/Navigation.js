@@ -74,8 +74,16 @@ export default function Navigation(props) {
     const Default = () => {
         return (
             <Stack.Navigator>
-                <Stack.Screen name="SignIn" component={SignIn} />
-                <Stack.Screen name="SignUp" component={SignUp} />
+                <Stack.Screen
+                    name="SignIn"
+                    component={SignIn}
+                    options={{ title: "Log In" }}
+                />
+                <Stack.Screen
+                    name="SignUp"
+                    component={SignUp}
+                    options={{ title: "Registration" }}
+                />
             </Stack.Navigator>
         );
     };
@@ -83,8 +91,16 @@ export default function Navigation(props) {
     const Patient = () => {
         return (
             <Stack.Navigator>
-                <Stack.Screen name="Queue" component={Queue} />
-                <Stack.Screen name="JoinQueue" component={JoinQueue} />
+                <Stack.Screen
+                    name="Queue"
+                    component={Queue}
+                    options={{ title: "Home" }}
+                />
+                <Stack.Screen
+                    name="JoinQueue"
+                    component={JoinQueue}
+                    options={{ title: "Join Queue" }}
+                />
             </Stack.Navigator>
         );
     };
@@ -104,11 +120,11 @@ export default function Navigation(props) {
     const Setting = () => {
         return (
             <Stack.Navigator>
-                <Stack.Screen name="SettingMenu" component={SettingMenu} />
+                <Stack.Screen name="SettingMenu" component={SettingMenu} options={{ title: "Settings" }}/>
                 <Stack.Screen name="Account" component={Account} />
                 <Stack.Screen name="Password" component={Password} />
                 <Stack.Screen name="Telephone" component={Telephone} />
-                <Stack.Screen name="HomeAddress" component={HomeAddress} />
+                <Stack.Screen name="HomeAddress" component={HomeAddress} options={{ title: "Home Address" }}/>
             </Stack.Navigator>
         );
     };
@@ -130,10 +146,15 @@ export default function Navigation(props) {
         return (
             <Stack.Navigator>
                 <Stack.Screen name="History" component={History} />
-                <Stack.Screen name="QueueDetails" component={QueueDetails} />
+                <Stack.Screen
+                    name="QueueDetails"
+                    component={QueueDetails}
+                    options={{ title: "Queue Details" }}
+                />
                 <Stack.Screen
                     name="AppointmentDetails"
                     component={AppointmentDetails}
+                    options={{ title: "Appointment Details" }}
                 />
             </Stack.Navigator>
         );
@@ -146,14 +167,17 @@ export default function Navigation(props) {
                 <Stack.Screen
                     name="MakeAppointment"
                     component={MakeAppointment}
+                    options={{ title: "Make Appointment" }}
                 />
                 <Stack.Screen
                     name="BookAppointment"
                     component={BookAppointment}
+                    options={{ title: "Book Appointment" }}
                 />
                 <Stack.Screen
                     name="AppointmentDetails"
                     component={AppointmentDetails}
+                    options={{ title: "Appointment Details" }}
                 />
             </Stack.Navigator>
         );

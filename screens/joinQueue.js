@@ -69,6 +69,7 @@ export default function joinQueue({ navigation }) {
                 specialty: specialty,
                 concern: concern,
             }).then((response) => {
+                console.log(response);
                 navigation.navigate("Queue", {
                     queueId: response.queue.id,
                 });
