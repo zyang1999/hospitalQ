@@ -48,14 +48,14 @@ export default function Account({ navigation, route }) {
                             style={styles.profilePicture}
                             source={{ uri: user.selfie_string }}
                         />
-                        <TouchableOpacity
+                        {/* <TouchableOpacity
                             style={styles.editButton}
                             onPress={uploadPicture}
                         >
                             <Text style={{ fontFamily: "RobotoBold" }}>
                                 Change Profile Image
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     <Text style={styles.title}>Name</Text>
                     <Text>{user.full_name}</Text>

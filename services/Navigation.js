@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
@@ -54,14 +54,6 @@ export default function Navigation(props) {
             }
         }
 
-        messaging().onNotificationOpenedApp((remoteMessage) => {
-            //   if (remoteMessage.data.type == "Verification") {
-            //     RootNavigation.reset(remoteMessage.data.route);
-            //   } else {
-            //     RootNavigation.navigate(remoteMessage.data.route);
-            //   }
-        });
-
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
             if (remoteMessage.data.type != "VerificationFail") {
                 setInitialRoute(remoteMessage.data.route);
@@ -77,7 +69,12 @@ export default function Navigation(props) {
                 <Stack.Screen
                     name="SignIn"
                     component={SignIn}
-                    options={{ title: "Log In" }}
+                    options={{
+                        title: "Log In",
+                        animationTypeForReplace: props.isSignout
+                            ? "pop"
+                            : "push",
+                    }}
                 />
                 <Stack.Screen
                     name="SignUp"
@@ -120,11 +117,19 @@ export default function Navigation(props) {
     const Setting = () => {
         return (
             <Stack.Navigator>
-                <Stack.Screen name="SettingMenu" component={SettingMenu} options={{ title: "Settings" }}/>
+                <Stack.Screen
+                    name="SettingMenu"
+                    component={SettingMenu}
+                    options={{ title: "Settings" }}
+                />
                 <Stack.Screen name="Account" component={Account} />
                 <Stack.Screen name="Password" component={Password} />
                 <Stack.Screen name="Telephone" component={Telephone} />
-                <Stack.Screen name="HomeAddress" component={HomeAddress} options={{ title: "Home Address" }}/>
+                <Stack.Screen
+                    name="HomeAddress"
+                    component={HomeAddress}
+                    options={{ title: "Home Address" }}
+                />
             </Stack.Navigator>
         );
     };
@@ -189,14 +194,17 @@ export default function Navigation(props) {
                 <Stack.Screen
                     name="ManageAppointment"
                     component={ManageAppointment}
+                    options={{ title: "Manage Appointments" }}
                 />
                 <Stack.Screen
                     name="AddAppointment"
                     component={AddAppointment}
+                    options={{ title: "Add Appointments" }}
                 />
                 <Stack.Screen
                     name="AppointmentDetails"
                     component={AppointmentDetails}
+                    options={{ title: "Appointment Details" }}
                 />
             </Stack.Navigator>
         );

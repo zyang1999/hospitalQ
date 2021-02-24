@@ -85,7 +85,7 @@ export default function joinQueue({ navigation }) {
         setScanned(true);
         try {
             json = JSON.parse(data);
-            if (json.url === baseUrl) {
+            if (json.url === "http://127.0.0.1:8000/") {
                 setSpecialty(json.specialty);
                 setIsVisible(true);
             } else {
@@ -121,7 +121,7 @@ export default function joinQueue({ navigation }) {
 
     return (
         <View style={globalStyles.container}>
-            <ConcernModal specialty={specialty} />
+            <ConcernModal />
             <BarCodeScanner
                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}

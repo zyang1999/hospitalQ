@@ -36,9 +36,7 @@ export default function StaffHome() {
     };
     getUserRole();
 
-    React.useEffect(() => {
-        setError([]);
-        const getAllQueue = () =>
+    const getAllQueue = () =>
             Api.request("getAllQueue", "GET", {}).then((response) => {
                 setAllQueue(response.allQueue);
                 setCurrentQueue(response.currentQueue);
@@ -52,6 +50,8 @@ export default function StaffHome() {
                 });
             });
 
+    React.useEffect(() => {
+        setError([]);
         getAllQueue();
 
         messaging().onMessage(async (remoteMessage) => {
@@ -74,6 +74,15 @@ export default function StaffHome() {
             }
         });
     }, [ready]);
+
+    const onRefresh = ()=>{
+        setQueueRefreshing(true);
+        getAllQueue();
+        setTimeout(function () {
+            setQueueRefreshing(false);
+        }, 2000);
+        
+    }
 
     const updateQueue = () => {
         Api.request("updateQueue", "POST", {
@@ -310,7 +319,10 @@ export default function StaffHome() {
                     keyExtractor={(item) => item.id.toString()}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
-                        <RefreshControl refreshing={queueRefreshing} />
+                        <RefreshControl
+                            refreshing={queueRefreshing}
+                            onRefresh={onRefresh}
+                        />
                     }
                     ListHeaderComponent={
                         <View style={{ padding: 10 }}>

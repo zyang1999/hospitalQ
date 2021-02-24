@@ -33,7 +33,7 @@ export const Appointment = ({ props, navigation, previousScreen }) => {
             <View
                 style={[
                     styles.statusContainer,
-                    props.status == "AVAILABLE"
+                    props.status == "AVAILABLE" || props.status == "COMPLETED"
                         ? { backgroundColor: "#A5D6A7" }
                         : { backgroundColor: "#FFE082" },
                 ]}
