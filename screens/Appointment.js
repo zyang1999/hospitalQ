@@ -18,12 +18,17 @@ export default function Appointment({ navigation, route }) {
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
+        let mounted = true;
         api.request("getAppointment", "GET", {}).then((response) => {
-            console.log(response);
-            setAppointmentToday(response.appointmentToday);
-            setAppointment(response.appointments);
-            setReady(true);
+            if (mounted) {
+                setAppointmentToday(response.appointmentToday);
+                setAppointment(response.appointments);
+                setReady(true);
+            }
         });
+        return function cleanup() {
+            mounted = false
+        }
     }, [route.params?.appointmentId]);
 
     const AppointmentItem = ({ item }) => (

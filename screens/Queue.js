@@ -6,7 +6,6 @@ import {
     StyleSheet,
     Image,
     TextInput,
-    RefreshControl,
 } from "react-native";
 import { globalStyles } from "../styles";
 import {
@@ -27,44 +26,47 @@ export default function Queue({ navigation, route }) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [error, setError] = useState([]);
     const [user, setUser] = useState(null);
-    const [queueRefreshing, setQueueRefreshing] = useState(false);
+    const [refresh, setRefresh] = useState(false);
 
     React.useEffect(() => {
+        let mounted = true;
         const getQueue = () =>
             Api.request("getUserQueue", "GET", {}).then((response) => {
-                setUser(response.user);
-                setUserQueue(response.userQueue);
-                if (response.userQueue) {
-                    Api.request("getAllQueue", "GET", {}).then((response) => {
-                        setAllQueue(response.allQueue);
+                if (mounted) {
+                    setUser(response.user);
+                    setUserQueue(response.userQueue);
+                    if (response.userQueue) {
+                        Api.request("getAllQueue", "GET", {}).then(
+                            (response) => {
+                                setAllQueue(response.allQueue);
+                                setReady(true);
+                            }
+                        );
+                    } else {
                         setReady(true);
-                    });
-                } else {
-                    setReady(true);
+                    }
                 }
             });
 
         messaging().onMessage(async (remoteMessage) => {
-            setQueueRefreshing(true);
             if (remoteMessage.data.type == "refreshQueue") {
-                Api.request("getAllQueue", "GET", {}).then((response) => {
-                    setAllQueue(response.allQueue);
-                    setQueueRefreshing(false);
-                });
+                setReady(false);
+                refresh ? setRefresh(false) : setRefresh(true);
             }
         });
 
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
             if (remoteMessage.data.type == "refreshQueue") {
-                Api.request("getAllQueue", "GET", {}).then((response) => {
-                    setAllQueue(response.allQueue);
-                    setQueueRefreshing(false);
-                });
+                refresh ? setRefresh(false) : setRefresh(true);
+                setReady(false);
             }
         });
 
         getQueue();
-    }, [route.params?.queueId, ready]);
+        return function cleanup() {
+            mounted = false;
+        };
+    }, [route.params?.queueId, refresh]);
 
     const Doctor = () => {
         const doctor = userQueue.doctor;
@@ -116,9 +118,7 @@ export default function Queue({ navigation, route }) {
             </View>
             <View style={{ flex: 7 }}>
                 <Text>Welcome Back,</Text>
-                <Text style={[globalStyles.h4]}>
-                    {user.first_name + " " + user.last_name}
-                </Text>
+                <Text style={[globalStyles.h4]}>{user.full_name}</Text>
             </View>
         </View>
     );
@@ -184,7 +184,7 @@ export default function Queue({ navigation, route }) {
             if (response.success) {
                 setModalVisible(false);
                 alert(response.message);
-                setReady(false);
+                refresh ? setRefresh(false) : setRefresh(true);
             } else {
                 setError(response.message);
             }
@@ -198,7 +198,6 @@ export default function Queue({ navigation, route }) {
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
-            refreshControl={<RefreshControl refreshing={queueRefreshing} />}
             ListHeaderComponent={
                 <View>
                     <CancelModal />
@@ -221,10 +220,22 @@ export default function Queue({ navigation, route }) {
                         Queue List
                     </Text>
                     <View style={globalStyles.queueStatus}>
-                        <Text style={globalStyles.queueTitle}>
+                        <Text
+                            style={[
+                                globalStyles.queueTitle,
+                                { fontFamily: "RobotoBold" },
+                            ]}
+                        >
                             Ticket Number
                         </Text>
-                        <Text style={globalStyles.queueTitle}>Now Serving</Text>
+                        <Text
+                            style={[
+                                globalStyles.queueTitle,
+                                { fontFamily: "RobotoBold" },
+                            ]}
+                        >
+                            Now Serving
+                        </Text>
                     </View>
                     {allQueue.length == 0 && (
                         <View
@@ -325,15 +336,11 @@ export default function Queue({ navigation, route }) {
                 )}
                 <Text style={styles.title}>Your Ticket Number</Text>
                 <Text style={globalStyles.h1}>{userQueue.queue_no}</Text>
+                <Text style={styles.title}>Collect Your Medecine At</Text>
+                <Text style={globalStyles.h2}>
+                    Counter {userQueue.location}
+                </Text>
 
-                {userQueue.status == "SERVING" && (
-                    <View style={{ alignItems: "center" }}>
-                        <Text style={styles.title}>Counter No</Text>
-                        <Text style={globalStyles.h2}>
-                            {userQueue.location}
-                        </Text>
-                    </View>
-                )}
                 <View style={{ flexDirection: "row" }}>
                     <View style={{ marginRight: 20 }}>
                         <View>
@@ -383,7 +390,10 @@ const styles = StyleSheet.create({
     },
     title: {
         fontFamily: "RobotoBold",
-        marginTop: 10,
+        fontSize: 17,
+    },
+    title2: {
+        fontFamily: "RobotoBold",
     },
     details: {
         marginTop: 10,

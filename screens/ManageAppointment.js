@@ -15,13 +15,18 @@ export default function ManageAppointment({ navigation, route }) {
     const [refresh, setRefresh] = useState(false);
 
     useEffect(() => {
+        let mounted = true;
         if (route.params?.appointmentId) {
             setLoading(true);
         }
         api.request("getDoctorAppointments", "GET", {}).then((response) => {
-            console.log(response);
-            loadItems(currentDate, response.allAppointments);
+            if (mounted) {
+                loadItems(currentDate, response.allAppointments);
+            }
         });
+        return function cleanup() {
+            mounted = false;
+        };
     }, [route.params?.appointmentId, refresh]);
 
     const getMarkedDate = () => {

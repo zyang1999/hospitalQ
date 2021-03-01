@@ -10,22 +10,27 @@ import {
 import Loading from "../components/Loading";
 import api from "../services/Api";
 import camera from "../services/Camera";
-import { globalStyles } from "../styles";
 
 export default function Account({ navigation, route }) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
+        let mounted = true;
         api.request("getUser", "GET", {}).then((response) => {
-            setUser(response.user);
-            setLoading(false);
+            if (mounted) {
+                setUser(response.user);
+                setLoading(false);
+            }
         });
+        return function cleanup() {
+            mounted = false;
+        };
     }, [loading, route.params?.refresh]);
 
     const uploadPicture = () => {
         camera.openGallery().then((image) => {
-            if (image == null){
+            if (image == null) {
                 return;
             }
             api.request("changeProfileImage", "POST", { image: image }).then(
@@ -41,21 +46,13 @@ export default function Account({ navigation, route }) {
         return <Loading />;
     } else {
         return (
-            <ScrollView >
+            <ScrollView>
                 <View style={styles.container}>
                     <View style={{ alignItems: "center" }}>
                         <Image
                             style={styles.profilePicture}
                             source={{ uri: user.selfie_string }}
                         />
-                        {/* <TouchableOpacity
-                            style={styles.editButton}
-                            onPress={uploadPicture}
-                        >
-                            <Text style={{ fontFamily: "RobotoBold" }}>
-                                Change Profile Image
-                            </Text>
-                        </TouchableOpacity> */}
                     </View>
                     <Text style={styles.title}>Name</Text>
                     <Text>{user.full_name}</Text>
@@ -85,7 +82,9 @@ export default function Account({ navigation, route }) {
                     )}
                     {user.role == "NURSE" && (
                         <View>
-                            <Text style={styles.title}>Serving Counter Number</Text>
+                            <Text style={styles.title}>
+                                Serving Counter Number
+                            </Text>
                             <Text style={styles.text}>
                                 {user.specialty.location}
                             </Text>
@@ -165,6 +164,6 @@ const styles = StyleSheet.create({
     },
     container: {
         padding: 20,
-        backgroundColor: 'white',
+        backgroundColor: "white",
     },
 });

@@ -13,7 +13,7 @@ class Camera {
   pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+    //   allowsEditing: true,
       quality: 1,
       base64: true,
     });

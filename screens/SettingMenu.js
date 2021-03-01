@@ -6,7 +6,6 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { DangerButton } from "../components/Button";
 import { globalStyles } from "../styles";
 import { AuthContext } from "../services/Context";
-import { CommonActions } from "@react-navigation/native";
 
 export default function SettingMenu({ navigation }) {
     const { signOut } = useContext(AuthContext);

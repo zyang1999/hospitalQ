@@ -98,6 +98,7 @@ export default function Authentication() {
             },
             signOut: async () => {
                 try {
+                    console.log("asd");
                     Api.request("logout", "GET", {});
                     await AsyncStorage.removeItem("userToken");
                     await AsyncStorage.removeItem("userRole");
@@ -154,7 +155,7 @@ export default function Authentication() {
     React.useEffect(() => {
         bootstrapAsync();
     }, []);
-
+    
     if (!state.isLoading) {
         if (!fontsLoaded) {
             return <AppLoading />;

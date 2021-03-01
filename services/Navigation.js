@@ -58,6 +58,7 @@ export default function Navigation(props) {
             if (remoteMessage.data.type != "VerificationFail") {
                 setInitialRoute(remoteMessage.data.route);
             }
+            console.log(remoteMessage);
         });
 
         requestUserPermission();

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Alert, TextInput } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { globalStyles } from "../styles";
-import { baseUrl } from "../services/baseUrl";
 import Api from "../services/Api";
 import Modal from "react-native-modal";
 import { PrimaryButton, SecondaryButton } from "../components/Button";

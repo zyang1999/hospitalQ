@@ -10,15 +10,21 @@ export default function DoctorAppointment({ navigation, route }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let mounted = true;
         if (route.params?.appointmentId) {
             setLoading(true);
         }
         api.request("getDoctorAppointmentsToday", "GET", {}).then(
             (response) => {
-                setAppointments(response.appointments);
-                setLoading(false);
+                if (mounted) {
+                    setAppointments(response.appointments);
+                    setLoading(false);
+                }
             }
         );
+        return function cleanup() {
+            mounted = false;
+        };
     }, [route.params?.appointmentId]);
 
     const renderItem = ({ item }) => (

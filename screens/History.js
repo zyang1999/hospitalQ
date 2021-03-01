@@ -28,6 +28,7 @@ export default function History({ navigation, route }) {
     }, []);
 
     useEffect(() => {
+        let mounted = true;
         if (route.params?.refresh) {
             setLoading(true);
         }
@@ -45,11 +46,17 @@ export default function History({ navigation, route }) {
             setLoading(false);
             setRefresh(false);
         });
+
+        return function cleanup() {
+            mounted = false
+        }
     }, [refresh, route.params?.refresh]);
 
     const getHistory = () => {
         return Api.request("getHistory", "GET", {}).then((response) => {
-            setQueueHistory(response.history);
+            if (mounted) {
+                setQueueHistory(response.history);
+            }
         });
     };
 

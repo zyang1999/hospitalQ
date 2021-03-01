@@ -31,6 +31,7 @@ export default function AppointmentDetails({ navigation, route }) {
     const [patient, setPatient] = useState(null);
 
     useEffect(() => {
+        let mounted = true;
         const getUserRole = async () => {
             let userRole = await AsyncStorage.getItem("userRole");
             setUserRole(userRole);
@@ -39,12 +40,16 @@ export default function AppointmentDetails({ navigation, route }) {
         api.request("getAppointmentDetails", "POST", {
             appointmentId: route.params.appointmentId,
         }).then((response) => {
-            console.log(response);
-            setAppointment(response);
-            setDoctor(response.doctor);
-            setPatient(response.patient);
-            setLoading(false);
+            if (mounted) {
+                setAppointment(response);
+                setDoctor(response.doctor);
+                setPatient(response.patient);
+                setLoading(false);
+            }
         });
+        return function cleanup() {
+            mounted = false
+        }
     }, []);
 
     const checkDate = (date) => {
@@ -324,10 +329,9 @@ export default function AppointmentDetails({ navigation, route }) {
                         <View
                             style={{
                                 flexDirection: "row",
-                                justifyContent: "space-between",
                             }}
                         >
-                            <View>
+                            <View style={{ marginRight: 35 }}>
                                 <View>
                                     <Text style={styles.title}>
                                         Appointment Date

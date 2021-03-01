@@ -24,6 +24,7 @@ export default function QueueDetails({ navigation, route }) {
     const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
+        let mounted = true;
         const getUserRole = async () => {
             let userRole = await AsyncStorage.getItem("userRole");
             setUserRole(userRole);
@@ -32,12 +33,18 @@ export default function QueueDetails({ navigation, route }) {
         api.request("getQueueDetails", "POST", {
             queueId: route.params.queueId,
         }).then((response) => {
-            setDetails(response);
-            setDoctor(response.doctor);
-            setPatient(response.patient);
-            getUserRole();
-            setLoading(false);
+            if (mounted) {
+                setDetails(response);
+                setDoctor(response.doctor);
+                setPatient(response.patient);
+                getUserRole();
+                setLoading(false);
+            }
         });
+
+        return function cleanup() {
+            mounted = false;
+        };
     }, []);
 
     const FeedbackModal = () => {
@@ -155,10 +162,9 @@ export default function QueueDetails({ navigation, route }) {
                         <View
                             style={{
                                 flexDirection: "row",
-                                justifyContent: "space-between",
                             }}
                         >
-                            <View>
+                            <View style={{ marginRight: 35 }}>
                                 <View>
                                     <Text style={styles.title}>Date</Text>
                                     <Text style={styles.details}>

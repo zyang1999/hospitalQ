@@ -29,7 +29,7 @@ export default function StaffHome() {
     const [nextPatient, setNextPatient] = useState(null);
     const [queueRefreshing, setQueueRefreshing] = useState(false);
     const [user, setUser] = useState(null);
-
+    let mounted = true;
     const getUserRole = async () => {
         let userRole = await AsyncStorage.getItem("userRole");
         setUserRole(userRole);
@@ -37,7 +37,8 @@ export default function StaffHome() {
     getUserRole();
 
     const getAllQueue = () =>
-            Api.request("getAllQueue", "GET", {}).then((response) => {
+        Api.request("getAllQueue", "GET", {}).then((response) => {
+            if (mounted) {
                 setAllQueue(response.allQueue);
                 setCurrentQueue(response.currentQueue);
                 setNextPatient(response.nextPatient);
@@ -48,7 +49,8 @@ export default function StaffHome() {
                     setUser(response.user);
                     setReady(true);
                 });
-            });
+            }
+        });
 
     React.useEffect(() => {
         setError([]);
@@ -62,6 +64,15 @@ export default function StaffHome() {
                     setQueueRefreshing(false);
                 });
             }
+
+            if (remoteMessage.data.type == "nurseRefreshQueue") {
+                setQueueRefreshing(true);
+                Api.request("getAllQueue", "GET", {}).then((response) => {
+                    setAllQueue(response.allQueue);
+                    setNextPatient(response.nextPatient);
+                    setQueueRefreshing(false);
+                });
+            }
         });
 
         messaging().setBackgroundMessageHandler(async (remoteMessage) => {
@@ -72,17 +83,28 @@ export default function StaffHome() {
                     setQueueRefreshing(false);
                 });
             }
+
+            if (remoteMessage.data.type == "nurseRefreshQueue") {
+                setQueueRefreshing(true);
+                Api.request("getAllQueue", "GET", {}).then((response) => {
+                    setAllQueue(response.allQueue);
+                    setNextPatient(response.nextPatient);
+                    setQueueRefreshing(false);
+                });
+            }
         });
+        return function cleanup() {
+            mounted = false;
+        };
     }, [ready]);
 
-    const onRefresh = ()=>{
+    const onRefresh = () => {
         setQueueRefreshing(true);
         getAllQueue();
         setTimeout(function () {
             setQueueRefreshing(false);
         }, 2000);
-        
-    }
+    };
 
     const updateQueue = () => {
         Api.request("updateQueue", "POST", {
